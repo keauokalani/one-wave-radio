@@ -13,9 +13,8 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE and Edge */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none;
+            user-select: none;
         }
         .player {
             background: #111;
@@ -51,24 +50,10 @@
             50% { opacity: 0.2; }
             100% { opacity: 1; }
         }
-        h1 {
-            font-size: 1.8rem;
-            margin: 0 0 5px 0;
-            font-weight: 800;
-        }
-        .subtitle {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-        }
-        #status {
-            color: #888;
-            margin-bottom: 40px;
-            min-height: 60px;
-            font-size: 16px;
-            line-height: 1.4;
-            text-transform: capitalize;
-        }
+        h1 { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
+        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+        #status { color: #888; margin-bottom: 40px; min-height: 60px; font-size: 16px; line-height: 1.4; }
+        
         button {
             background: #fff;
             color: #000;
@@ -81,30 +66,16 @@
             font-size: 18px;
             transition: 0.3s;
         }
-        button:hover {
-            background: #00ff00;
-            transform: translateY(-5px);
-        }
-        /* Custom player controls */
-        #playerControls {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
+        button:hover { background: #00ff00; transform: translateY(-5px); }
+        
+        #playerControls { display: none; margin-top: 20px; text-align: center; }
         #playPauseBtn, #stopBtn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 0 5px;
+            background: #fff; color: #000; border: none;
+            padding: 10px 20px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; margin: 0 5px;
         }
-        #volumeSlider {
-            width: 80%;
-            margin: 10px auto;
-        }
+        #volumeSlider { width: 80%; margin: 10px auto; }
+        audio { display: none; }
     </style>
 </head>
 <body>
@@ -113,27 +84,136 @@
     <div class="live-tag"><div class="dot"></div> LIVE 24/7</div>
     <h1>One Wave Radio</h1>
     <div class="subtitle">24/7 Original Music by De. Oliveira</div>
-    <div id="status">Loading playlist...</div>
+    <div id="status">Click TUNE IN to start</div>
+    
     <button id="playBtn">TUNE IN</button>
+    
     <div id="playerControls">
         <button id="playPauseBtn">PAUSE</button>
         <button id="stopBtn">STOP</button>
-        <div>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7">
-        </div>
+        <div><input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7"></div>
     </div>
-    <!-- Audio element is hidden and disabled for download -->
-    <audio id="radioPlayer" controls style="display: none;"></audio>
+    
+    <audio id="radioPlayer"></audio>
 </div>
 
 <script>
-    // Disable right-click on the entire page
     document.addEventListener('contextmenu', event => event.preventDefault());
 
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzXLN14GgOIiyDr3Bny3YzHyxxjwSMEN_l-QO1bR34g_6ZS1ZizN5_4D_6eRQEIJPsAv7vwU-goKnn/pubhtml";
-
+    
     const player = document.getElementById('radioPlayer');
     const btn = document.getElementById('playBtn');
     const statusText = document.getElementById('status');
     const playPauseBtn = document.getElementById('playPauseBtn');
-    const stopBtn = 
+    const stopBtn = document.getElementById('stopBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const playerControls = document.getElementById('playerControls');
+    
+    let tracks = [];
+    let isPlaying = false;
+
+    async function loadPlaylist() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            const rows = doc.querySelectorAll("table tr");
+
+            tracks = [];
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].querySelectorAll("td");
+                if (cells.length >= 3) {
+                    const url = cells[0].textContent.trim();
+                    const displayName = cells[1].textContent.trim();
+                    const active = cells[2].textContent.trim().toLowerCase();
+                    if (active === 'yes' && url) {
+                        tracks.push({ url, displayName });
+                    }
+                }
+            }
+            console.log("Loaded " + tracks.length + " tracks.");
+        } catch (error) {
+            console.error("Sheet error:", error);
+        }
+    }
+
+    function playNext() {
+        if (tracks.length === 0) {
+            statusText.innerText = "No tracks loaded yet.";
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * tracks.length);
+        const currentTrack = tracks[randomIndex];
+        
+        statusText.innerText = "Connecting...";
+        
+        player.pause();
+        player.src = ""; 
+        player.load();
+        
+        const finalUrl = currentTrack.url + "?t=" + Date.now();
+        player.src = finalUrl;
+
+        player.oncanplay = () => {
+            console.log("Can play: " + currentTrack.displayName);
+            statusText.innerHTML = "NOW PLAYING:<br><b style='color:#fff'>" + currentTrack.displayName + "</b>";
+            
+            const playPromise = player.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    console.log("Playback started successfully");
+                    updateUI(true);
+                })
+                .catch(error => {
+                    console.error("Playback failed:", error);
+                    statusText.innerText = "Click again to retry...";
+                });
+            }
+        };
+
+        player.onerror = (e) => {
+            console.error("Error loading track:", e);
+            statusText.innerText = "Skipping bad track...";
+            setTimeout(playNext, 1000);
+        };
+    }
+
+    function updateUI(playing) {
+        btn.style.display = "none";
+        playerControls.style.display = "block";
+        isPlaying = playing;
+        playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
+    }
+
+    btn.onclick = () => {
+        if (tracks.length === 0) {
+            loadPlaylist().then(() => {
+                if(tracks.length > 0) playNext();
+            });
+        } else {
+            playNext();
+        }
+    };
+
+    playPauseBtn.onclick = () => {
+        if (isPlaying) { player.pause(); updateUI(false); } 
+        else { player.play(); updateUI(true); }
+    };
+
+    stopBtn.onclick = () => {
+        player.pause(); 
+        player.currentTime = 0; 
+        updateUI(false);
+        statusText.innerText = "Stopped.";
+    };
+
+    volumeSlider.oninput = () => { player.volume = volumeSlider.value; };
+    player.onended = () => { playNext(); };
+
+    loadPlaylist();
+</script>
+</body>
+</html>
