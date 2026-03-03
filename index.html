@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>One Wave Radio</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE and Edge */
+            user-select: none; /* Standard syntax */
+        }
+        .player {
+            background: #111;
+            padding: 60px;
+            border-radius: 50px;
+            text-align: center;
+            width: 380px;
+            border: 1px solid #222;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+        }
+        .live-tag {
+            color: #00ff00;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 5px 0;
+            font-weight: 800;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        #status {
+            color: #888;
+            margin-bottom: 40px;
+            min-height: 60px;
+            font-size: 16px;
+            line-height: 1.4;
+            text-transform: capitalize;
+        }
+        button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 22px;
+            border-radius: 100px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #00ff00;
+            transform: translateY(-5px);
+        }
+        /* Custom player controls */
+        #playerControls {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        #playPauseBtn, #stopBtn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        #volumeSlider {
+            width: 80%;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="player">
+    <div class="live-tag"><div class="dot"></div> LIVE 24/7</div>
+    <h1>One Wave Radio</h1>
+    <div class="subtitle">24/7 Original Music by De. Oliveira</div>
+    <div id="status">Loading playlist...</div>
+    <button id="playBtn">TUNE IN</button>
+    <div id="playerControls">
+        <button id="playPauseBtn">PAUSE</button>
+        <button id="stopBtn">STOP</button>
+        <div>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7">
+        </div>
+    </div>
+    <!-- Audio element is hidden and disabled for download -->
+    <audio id="radioPlayer" controls style="display: none;"></audio>
+</div>
+
+<script>
+    // Disable right-click on the entire page
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzXLN14GgOIiyDr3Bny3YzHyxxjwSMEN_l-QO1bR34g_6ZS1ZizN5_4D_6eRQEIJPsAv7vwU-goKnn/pubhtml";
+
+    const player = document.getElementById('radioPlayer');
+    const btn = document.getElementById('playBtn');
+    const statusText = document.getElementById('status');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const stopBtn = 
