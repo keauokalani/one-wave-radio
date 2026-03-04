@@ -70,16 +70,34 @@
     const playerControls = document.getElementById('playerControls');
     
     let isPlaying = false;
+    let shuffledTracks = [];
+    let currentTrackIndex = 0;
 
+    // Fisher-Yates shuffle algorithm
+    function shuffleArray(arr) {
+      const shuffled = arr.slice();
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // Initialize shuffled playlist
+    shuffledTracks = shuffleArray(tracks);
     function playNext() {
         if (tracks.length === 0) {
             statusText.innerText = "No songs found!";
             return;
         }
 
-        const randomIndex = Math.floor(Math.random() * tracks.length);
-        const currentTrack = tracks[randomIndex];
-        
+      // Get next track from shuffled playlist
+      if (currentTrackIndex >= shuffledTracks.length) {
+        shuffledTracks = shuffleArray(tracks);
+        currentTrackIndex = 0;
+      }
+      const currentTrack = shuffledTracks[currentTrackIndex];
+      currentTrackIndex++;        
         statusText.innerText = "Starting " + currentTrack.name + "...";
         
         // Reset player completely
@@ -116,6 +134,8 @@
     // THE BUTTON CLICK
     btn.onclick = () => {
         console.log("Button clicked!");
+        shuffledTracks = shuffleArray(tracks);
+        currentTrackIndex = 0;
         playNext();
     };
 
