@@ -5,40 +5,43 @@
     <title>One Wave Radio</title>
     <style>
         body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; user-select: none; }
-        .player { background: #111; padding: 60px; border-radius: 50px; text-align: center; width: 380px; border: 1px solid #222; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
-        .live-tag { color: #00ff00; font-size: 11px; font-weight: 900; letter-spacing: 4px; margin-bottom: 15px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .player { position: relative; width: 380px; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.5); background: #111; }
+        .player-image-wrapper { position: relative; width: 100%; }
+        .player-image-wrapper img { display: block; width: 100%; height: auto; }
+        .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.85); }
+        .live-tag { color: #00ff00; font-size: 11px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        h1 { font-size: 1.8rem; margin: 0 0 5px 0; font-weight: 800; }
-        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
-        #status { color: #888; margin-bottom: 40px; min-height: 60px; font-size: 16px; line-height: 1.4; }
-        button { background: #fff; color: #000; border: none; padding: 22px; border-radius: 100px; font-weight: 900; cursor: pointer; width: 100%; font-size: 18px; transition: 0.3s; }
-        button:hover { background: #00ff00; transform: translateY(-5px); }
-        #playerControls { display: none; margin-top: 20px; text-align: center; }
-        #playPauseBtn, #stopBtn { background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; margin: 0 5px; }
-        #volumeSlider { width: 80%; margin: 10px auto; }
-        audio { display: none; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        #status { font-size: 13px; color: #333; text-align: center; min-height: 18px; }
+        #playBtn { background: #00c853; color: #fff; border: none; padding: 10px 40px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
+        #playBtn:hover { background: #00e676; }
+        #playerControls { display: none; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+        #playerControls button { background: #333; color: #fff; border: none; padding: 8px 20px; font-size: 13px; border-radius: 20px; cursor: pointer; margin: 0 4px; }
+        #playerControls button:hover { background: #555; }
+        .btn-row { display: flex; gap: 10px; }
+        #volumeSlider { width: 140px; accent-color: #00c853; }
+        @media (max-width: 420px) { .player { width: 95vw; } }
     </style>
 </head>
 <body>
-
-<div class="player">
-    <div class="live-tag"><div class="dot"></div> LIVE 24/7</div>
-    <h1>One Wave Radio</h1>
-    <div class="subtitle">24/7 Original Music by De. Oliveira</div>
-    <div id="status">Ready to play</div>
-    
-    <button id="playBtn">TUNE IN</button>
-    
-    <div id="playerControls">
-        <button id="playPauseBtn">PAUSE</button>
-        <button id="stopBtn">STOP</button>
-        <div><input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7"></div>
+    <div class="player">
+        <div class="player-image-wrapper">
+            <img src="One%20Wave%20Radio%20Logo.png" alt="One Wave Radio 24/7 Original Music by D. Oliveira">
+            <div class="controls-overlay">
+                <div class="live-tag"><div class="dot"></div> LIVE 24/7</div>
+                <div id="status">Ready to play</div>
+                <button id="playBtn">TUNE IN</button>
+                <div id="playerControls">
+                    <div class="btn-row">
+                        <button id="playPauseBtn">PAUSE</button>
+                        <button id="stopBtn">STOP</button>
+                    </div>
+                    <div><input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7"></div>
+                </div>
+            </div>
+        </div>
+        <audio id="radioPlayer"></audio>
     </div>
-    
-    <audio id="radioPlayer"></audio>
-</div>
-
 <script>
     // DISABLE RIGHT CLICK
     document.addEventListener('contextmenu', event => event.preventDefault());
