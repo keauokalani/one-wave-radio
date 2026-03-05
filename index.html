@@ -99,56 +99,84 @@
     const stopBtn = document.getElementById('stopBtn');
     const volumeSlider = document.getElementById('volumeSlider');
     const playerControls = document.getElementById('playerControls');
-    
+
     let isPlaying = false;
     let shuffledTracks = [];
     let currentTrackIndex = 0;
 
-    // Fisher-Yates shuffle algorithm
+    // Station ID tracks
+    const stationIDNames = [
+        'ONE WAVE RADIO MAIN INTRO.mp3',
+        'one_wave_radio_v2.mp3',
+        'one_wave_radioSweep.mp3'
+    ];
+
+    const stationIDTracks = tracks.filter(t => {
+        const fname = decodeURIComponent(t.url.split('/').pop());
+        return stationIDNames.includes(fname);
+    });
+    const regularTracks = tracks.filter(t => {
+        const fname = decodeURIComponent(t.url.split('/').pop());
+        return !stationIDNames.includes(fname);
+    });
+    const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
+
+    let isFirstPlay = true;
+    let lastHourPlayed = -1;
+
     function shuffleArray(arr) {
-      const shuffled = arr.slice();
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
+        const shuffled = arr.slice();
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
     }
 
-    // Initialize shuffled playlist
-    shuffledTracks = shuffleArray(tracks);
+    shuffledTracks = shuffleArray(regularTracks);
+
+    function shouldPlayStationID() {
+        const currentHour = new Date().getHours();
+        return currentHour !== lastHourPlayed;
+    }
+
+    function getRandomStationID() {
+        const idx = Math.floor(Math.random() * stationIDTracks.length);
+        return stationIDTracks[idx];
+    }
+
     function playNext() {
         if (tracks.length === 0) {
             statusText.innerText = "No songs found!";
             return;
         }
-
-      // Get next track from shuffled playlist
-      if (currentTrackIndex >= shuffledTracks.length) {
-        shuffledTracks = shuffleArray(tracks);
-        currentTrackIndex = 0;
-      }
-      const currentTrack = shuffledTracks[currentTrackIndex];
-      currentTrackIndex++;        
+        let currentTrack;
+        if (isFirstPlay) {
+            currentTrack = introTrack;
+            isFirstPlay = false;
+            lastHourPlayed = new Date().getHours();
+        } else if (shouldPlayStationID()) {
+            currentTrack = getRandomStationID();
+            lastHourPlayed = new Date().getHours();
+        } else {
+            if (currentTrackIndex >= shuffledTracks.length) {
+                shuffledTracks = shuffleArray(regularTracks);
+                currentTrackIndex = 0;
+            }
+            currentTrack = shuffledTracks[currentTrackIndex];
+            currentTrackIndex++;
+        }
         statusText.innerText = "Starting " + currentTrack.name + "...";
-        
-        // Reset player completely
         player.pause();
         player.src = "";
-        
-        // Set new source with cache buster
         const finalUrl = currentTrack.url + "?t=" + Date.now();
         player.src = finalUrl;
-        
-        // TRY TO PLAY IMMEDIATELY
         const playPromise = player.play();
-        
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                // Success!
                 statusText.innerHTML = "NOW PLAYING:<br><b style='color:#fff'>" + currentTrack.name + "</b>";
                 updateUI(true);
             }).catch(error => {
-                // Failed to play automatically
                 console.error("Play failed:", error);
                 statusText.innerText = "Click TUNE IN again to start.";
             });
@@ -162,28 +190,29 @@
         playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
     }
 
-    // THE BUTTON CLICK
     btn.onclick = () => {
         console.log("Button clicked!");
-        shuffledTracks = shuffleArray(tracks);
+        isFirstPlay = true;
+        lastHourPlayed = -1;
+        shuffledTracks = shuffleArray(regularTracks);
         currentTrackIndex = 0;
         playNext();
     };
 
     playPauseBtn.onclick = () => {
-        if (isPlaying) { player.pause(); updateUI(false); } 
+        if (isPlaying) { player.pause(); updateUI(false); }
         else { player.play(); updateUI(true); }
     };
 
     stopBtn.onclick = () => {
-        player.pause(); 
-        player.currentTime = 0; 
+        player.pause();
+        player.currentTime = 0;
         updateUI(false);
         statusText.innerText = "Stopped.";
     };
 
     volumeSlider.oninput = () => { player.volume = volumeSlider.value; };
     player.onended = () => { playNext(); };
-</script>
+    </script>
 </body>
 </html>
