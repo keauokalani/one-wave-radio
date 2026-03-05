@@ -5,22 +5,22 @@
     <title>One Wave Radio</title>
     <style>
         body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; user-select: none; }
-        .player { position: relative; width: 380px; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.5); background: #111; }
+        .player { position: relative; width: 520px; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.5); background: #111; }
         .player-image-wrapper { position: relative; width: 100%; }
         .player-image-wrapper img { display: block; width: 100%; height: auto; }
         .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.85); }
-        .live-tag { color: #00ff00; font-size: 11px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .live-tag { color: #00ff00; font-size: 14px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        #status { font-size: 13px; color: #333; text-align: center; min-height: 18px; }
-        #playBtn { background: #00c853; color: #fff; border: none; padding: 10px 40px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
+        #status { font-size: 16px; color: #333; text-align: center; min-height: 18px; }
+        #playBtn { background: #00c853; color: #fff; border: none; padding: 14px 50px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
         #playBtn:hover { background: #00e676; }
         #playerControls { display: none; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
-        #playerControls button { background: #333; color: #fff; border: none; padding: 8px 20px; font-size: 13px; border-radius: 20px; cursor: pointer; margin: 0 4px; }
+        #playerControls button { background: #333; color: #fff; border: none; padding: 10px 24px; font-size: 15px; border-radius: 20px; cursor: pointer; margin: 0 4px; }
         #playerControls button:hover { background: #555; }
         .btn-row { display: flex; gap: 10px; }
-        #volumeSlider { width: 140px; accent-color: #00c853; }
-        @media (max-width: 420px) { .player { width: 95vw; } }
+        #volumeSlider { width: 200px; accent-color: #00c853; }
+        @media (max-width: 540px) { .player { width: 95vw; } }
     </style>
 </head>
 <body>
