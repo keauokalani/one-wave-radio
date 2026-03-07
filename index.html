@@ -48,6 +48,10 @@
 
     // HARDCODED SONGS (No Google Sheet delay!)
     const tracks = [
+                { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/ONE%20WAVE%20RADIO%20MAIN%20INTRO.mp3", name: "One Wave Radio Main Intro" },
+        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radio_v2.mp3", name: "One Wave Radio V2" },
+        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radioSweep.mp3", name: "One Wave Radiosweep" },
+{ url: "https://pub-2aa01387a331477abb91b2bed6174769.r2.dev/Morning%20News.mp3", name: "Morning News" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Country_living.mp3", name: "Country living" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Po_mystic.mp3", name: "Po mystic" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Mother_of_light.mp3", name: "Mother of light" },
@@ -61,9 +65,6 @@
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Ka'u%20Coffee%20(Country%20Reggae).mp3", name: "Ka'u Coffee Country Reggae" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Ka'u%20Coffee%20Jingle%20(Fast%20Country).mp3", name: "Ka'u Coffee Jingle Fast Country" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Uptown_Jam.mp3", name: "Uptown Jam" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/ONE%20WAVE%20RADIO%20MAIN%20INTRO.mp3", name: "One Wave Radio Main Intro" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radio_v2.mp3", name: "One Wave Radio V2" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radioSweep.mp3", name: "One Wave Radiosweep" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Bounce.mp3", name: "Island Bounce" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Soul_Sunset_V2.mp3", name: "Island Soul Sunset V2" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_soul_heavybass.mp3", name: "Island Soul Heavybass" },
@@ -119,9 +120,11 @@
         const fname = decodeURIComponent(t.url.split('/').pop());
         return !stationIDNames.includes(fname);
     });
+        const newsTrack = tracks.find(t => t.url.includes('Morning%20News'));
     const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
 
     let isFirstPlay = true;
+        let playNewsNext = false;
     let lastHourPlayed = -1;
 
     function shuffleArray(arr) {
@@ -152,12 +155,17 @@
         }
         let currentTrack;
         if (isFirstPlay) {
-            currentTrack = introTrack;
+            currentTrack = getRandomStationID();
             isFirstPlay = false;
+                        playNewsNext = true;
             lastHourPlayed = new Date().getHours();
         } else if (shouldPlayStationID()) {
             currentTrack = getRandomStationID();
             lastHourPlayed = new Date().getHours();
+                        playNewsNext = true;
+        } else if (playNewsNext) {
+                        currentTrack = newsTrack;
+                        playNewsNext = false;
         } else {
             if (currentTrackIndex >= shuffledTracks.length) {
                 shuffledTracks = shuffleArray(regularTracks);
