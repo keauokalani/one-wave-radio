@@ -10,7 +10,7 @@
         .player-image-wrapper img { display: block; width: 100%; height: auto; }
         .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.85); }
         .live-tag { color: #00ff00; font-size: 14px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
+        .dot { width: 8px; height: 8px; background: #00ff00; border-radius:50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         #status { font-size: 16px; color: #333; text-align: center; min-height: 18px; }
         #playBtn { background: #00c853; color: #fff; border: none; padding: 14px 50px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
@@ -51,7 +51,7 @@
                 { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/ONE%20WAVE%20RADIO%20MAIN%20INTRO.mp3", name: "One Wave Radio Main Intro" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radio_v2.mp3", name: "One Wave Radio V2" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radioSweep.mp3", name: "One Wave Radiosweep" },
-{ url: "https://pub-2aa01387a331477abb91b2bed6174769.r2.dev/Morning%20News.mp3", name: "Morning News" },
+{ url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Morning%20News.mp3", name: "Morning News" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Country_living.mp3", name: "Country living" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Po_mystic.mp3", name: "Po mystic" },
         { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Mother_of_light.mp3", name: "Mother of light" },
@@ -118,7 +118,7 @@
     });
     const regularTracks = tracks.filter(t => {
         const fname = decodeURIComponent(t.url.split('/').pop());
-        return !stationIDNames.includes(fname);
+        return !stationIDNames.includes(fname) && fname !== 'Morning News.mp3';
     });
         const newsTrack = tracks.find(t => t.url.includes('Morning%20News'));
     const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
