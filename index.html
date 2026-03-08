@@ -117,13 +117,11 @@
     });
     const regularTracks = tracks.filter(t => {
         const fname = decodeURIComponent(t.url.split('/').pop());
-        return !stationIDNames.includes(fname) && fname !== 'Morning News.mp3';
+        return !stationIDNames.includes(fname;
     });
-        const newsTrack = tracks.find(t => t.url.includes('Morning%20News'));
     const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
 
     let isFirstPlay = true;
-        let playNewsNext = false;
     let lastHourPlayed = -1;
 
     function shuffleArray(arr) {
@@ -156,15 +154,10 @@
         if (isFirstPlay) {
             currentTrack = getRandomStationID();
             isFirstPlay = false;
-                        playNewsNext = true;
             lastHourPlayed = new Date().getHours();
         } else if (shouldPlayStationID()) {
             currentTrack = getRandomStationID();
             lastHourPlayed = new Date().getHours();
-                        playNewsNext = true;
-        } else if (playNewsNext) {
-                        currentTrack = newsTrack;
-                        playNewsNext = false;
         } else {
             if (currentTrackIndex >= shuffledTracks.length) {
                 shuffledTracks = shuffleArray(regularTracks);
