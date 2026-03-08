@@ -117,7 +117,7 @@
     });
     const regularTracks = tracks.filter(t => {
         const fname = decodeURIComponent(t.url.split('/').pop());
-        return !stationIDNames.includes(fname;
+        return !stationIDNames.includes(fname);
     });
     const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
 
