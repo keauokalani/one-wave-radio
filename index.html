@@ -8,9 +8,9 @@
         .player { position: relative; width: 520px; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.5); background: #111; }
         .player-image-wrapper { position: relative; width: 100%; }
         .player-image-wrapper img { display: block; width: 100%; height: auto; }
-        .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.85); }
-        .live-tag { color: #00ff00; font-size: 14px; font-weight: 900; lettr-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .dot { width: 8px; height: 8px; background: #00ff00; border-radius:50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
+        .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); }
+        .live-tag { color: #00ff00; font-size: 14px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         #status { font-size: 16px; color: #333; text-align: center; min-height: 18px; }
         #playBtn { background: #00c853; color: #fff; border: none; padding: 14px 50px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
@@ -18,7 +18,7 @@
         #playerControls { display: none; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
         #playerControls button { background: #333; color: #fff; border: none; padding: 10px 24px; font-size: 15px; border-radius: 20px; cursor: pointer; margin: 0 4px; }
         #playerControls button:hover { background: #555; }
-                .btn-row { display: flex; gap: 10px; justify-content: center; }
+        .btn-row { display: flex; gap: 10px; justify-content: center; }
         #volumeSlider { width: 200px; accent-color: #00c853; }
         @media (max-width: 540px) { .player { width: 95vw; } }
     </style>
@@ -35,184 +35,108 @@
                     <div class="btn-row">
                         <button id="playPauseBtn">PAUSE</button>
                         <button id="stopBtn">STOP</button>
+                        <button id="skipBtn">SKIP</button>
                     </div>
-                                    <div style="display: flex; justify-content: center;"><input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.7"></div>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
                 </div>
             </div>
         </div>
-        <audio id="radioPlayer"></audio>
     </div>
-<script>
-    // DISABLE RIGHT CLICK
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    <audio id="player" preload="none"></audio>
+    <script>
+        const tracks = [
+            { url: "https://pub-2aa01387a331477abb91b2bed6174b9.r2.dev/quiet_reflection.mp3", name: "Quiet Reflection" },
+        ];
 
-    // HARDCODED SONGS (No Google Sheet delay!)
-    const tracks = [
-                { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/ONE%20WAVE%20RADIO%20MAIN%20INTRO.mp3", name: "One Wave Radio Main Intro" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radio_v2.mp3", name: "One Wave Radio V2" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/one_wave_radioSweep.mp3", name: "One Wave Radiosweep" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Country_living.mp3", name: "Country living" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Po_mystic.mp3", name: "Po mystic" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Mother_of_light.mp3", name: "Mother of light" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Softly_loving_you.mp3", name: "Softly loving you" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Softly_loving_you_main.mp3", name: "Softly loving you main" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Softlylovingyou_megan_version.mp3", name: "Softlylovingyou megan version" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Yahweh.m4a", name: "Yahweh" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/2000_futuristic_brandy.mp3", name: "2000 Futuristic Brandy" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/90s_classic_brandy.mp3", name: "90s Classic Brandy" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Doing%20somethin%20right%20(Original%20Song).mp3", name: "Doing Somethin Right Original Song" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Ka'u%20Coffee%20(Country%20Reggae).mp3", name: "Ka'u Coffee Country Reggae" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Ka'u%20Coffee%20Jingle%20(Fast%20Country).mp3", name: "Ka'u Coffee Jingle Fast Country" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Uptown_Jam.mp3", name: "Uptown Jam" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Bounce.mp3", name: "Island Bounce" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Soul_Sunset_V2.mp3", name: "Island Soul Sunset V2" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_soul_heavybass.mp3", name: "Island Soul Heavybass" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_soul_onedrop.mp3", name: "Island Soul Onedrop" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_sunset_instrumental.mp3", name: "Island Sunset Instrumental" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Minimaldrill_trap.mp3", name: "Minimaldrill Trap" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Nvr_say_goodbye_brandy.mp3", name: "Nvr Say Goodbye Brandy" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Slowjamballad_brandy.mp3", name: "Slowjamballad Brandy" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Spacetrap_futuristic.mp3", name: "Spacetrap Futuristic" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/UK_Lovers_Reggae.mp3", name: "UK Lovers Reggae" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/atmosphericdancehall_drake.mp3", name: "Atmosphericdancehall Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/bell_noir.mp3", name: "Bell Noir" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/darklane_latenight_drake.mp3", name: "Darklane Latenight Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/dubtouch_reggae.mp3", name: "Dubtouch Reggae" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/emotionalspace_piano_drake.mp3", name: "Emotionalspace Piano Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/industrial_street.mp3", name: "Industrial Street" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/island_horizon.mp3", name: "Island Horizon" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/islandroots_reflections.mp3", name: "Islandroots Reflections" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/latenight_luxury_trap.mp3", name: "Latenight Luxury Trap" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/luxury_glossy_trap.mp3", name: "Luxury Glossy Trap" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/midnightdrift_drake.mp3", name: "Midnightdrift Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/rnb_midtempo_brandy.mp3", name: "Rnb Midtempo Brandy" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_four_drake.mp3", name: "Version Four Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_three_drake.mp3", name: "Version Three Drake" },
-        { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_two_drake.mp3", name: "Version Two Drake" },
-        // Add more here later if needed
-    ];
+        const stationIDTracks = [];
+        const regularTracks = tracks.filter(t => !stationIDTracks.includes(t.url.split('/').pop()));
 
-    const player = document.getElementById('radioPlayer');
-    const btn = document.getElementById('playBtn');
-    const statusText = document.getElementById('status');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const playerControls = document.getElementById('playerControls');
+        const player = document.getElementById("player");
+        const btn = document.getElementById("playBtn");
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const skipBtn = document.getElementById("skipBtn");
+        const playerControls = document.getElementById("playerControls");
+        const statusText = document.getElementById("status");
+        const volumeSlider = document.getElementById("volumeSlider");
 
-    let isPlaying = false;
-    let shuffledTracks = [];
-    let currentTrackIndex = 0;
+        let isPlaying = false;
+        let shuffledTracks = [];
+        let currentTrackIndex = 0;
+        let isFirstPlay = true;
+        let lastHourPlayed = -1;
 
-    // Station ID tracks
-    const stationIDNames = [
-        'ONE WAVE RADIO MAIN INTRO.mp3',
-        'one_wave_radio_v2.mp3',
-        'one_wave_radioSweep.mp3'
-    ];
-
-    const stationIDTracks = tracks.filter(t => {
-        const fname = decodeURIComponent(t.url.split('/').pop());
-        return stationIDNames.includes(fname);
-    });
-    const regularTracks = tracks.filter(t => {
-        const fname = decodeURIComponent(t.url.split('/').pop());
-        return !stationIDNames.includes(fname);
-    });
-    const introTrack = stationIDTracks.find(t => t.url.includes('ONE%20WAVE%20RADIO%20MAIN%20INTRO'));
-
-    let isFirstPlay = true;
-    let lastHourPlayed = -1;
-
-    function shuffleArray(arr) {
-        const shuffled = arr.slice();
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
         }
-        return shuffled;
-    }
 
-    shuffledTracks = shuffleArray(regularTracks);
+        function playNext() {
+            const now = new Date();
+            const currentHour = now.getHours();
 
-    function shouldPlayStationID() {
-        const currentHour = new Date().getHours();
-        return currentHour !== lastHourPlayed;
-    }
+            if (stationIDTracks.length > 0 && currentHour !== lastHourPlayed) {
+                lastHourPlayed = currentHour;
+                const idTracks = tracks.filter(t => stationIDTracks.includes(t.url.split('/').pop()));
+                if (idTracks.length > 0) {
+                    const pick = idTracks[Math.floor(Math.random() * idTracks.length)];
+                    statusText.innerText = "Now playing: " + pick.name;
+                    player.src = pick.url;
+                    player.play();
+                    updateUI(true);
+                    return;
+                }
+            }
 
-    function getRandomStationID() {
-        const idx = Math.floor(Math.random() * stationIDTracks.length);
-        return stationIDTracks[idx];
-    }
-
-    function playNext() {
-        if (tracks.length === 0) {
-            statusText.innerText = "No songs found!";
-            return;
-        }
-        let currentTrack;
-        if (isFirstPlay) {
-            currentTrack = getRandomStationID();
-            isFirstPlay = false;
-            lastHourPlayed = new Date().getHours();
-        } else if (shouldPlayStationID()) {
-            currentTrack = getRandomStationID();
-            lastHourPlayed = new Date().getHours();
-        } else {
             if (currentTrackIndex >= shuffledTracks.length) {
                 shuffledTracks = shuffleArray(regularTracks);
                 currentTrackIndex = 0;
             }
-            currentTrack = shuffledTracks[currentTrackIndex];
+
+            const track = shuffledTracks[currentTrackIndex];
             currentTrackIndex++;
+            statusText.innerText = "Now playing: " + track.name;
+            player.src = track.url;
+            player.play();
+            updateUI(true);
         }
-        statusText.innerText = "Starting " + currentTrack.name + "...";
-        player.pause();
-        player.src = "";
-        const finalUrl = currentTrack.url + "?t=" + Date.now();
-        player.src = finalUrl;
-        const playPromise = player.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                statusText.innerHTML = "NOW PLAYING:<br><b style='color:#fff'>" + currentTrack.name + "</b>";
-                updateUI(true);
-            }).catch(error => {
-                console.error("Play failed:", error);
-                statusText.innerText = "Click TUNE IN again to start.";
-            });
+
+        function updateUI(playing) {
+            btn.style.display = "none";
+            playerControls.style.display = "flex";
+            isPlaying = playing;
+            playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
         }
-    }
 
-    function updateUI(playing) {
-        btn.style.display = "none";
-        playerControls.style.display = "flex";
-        isPlaying = playing;
-        playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
-    }
+        btn.onclick = () => {
+            console.log("Button clicked!");
+            isFirstPlay = true;
+            lastHourPlayed = -1;
+            shuffledTracks = shuffleArray(regularTracks);
+            currentTrackIndex = 0;
+            playNext();
+        };
 
-    btn.onclick = () => {
-        console.log("Button clicked!");
-        isFirstPlay = true;
-        lastHourPlayed = -1;
-        shuffledTracks = shuffleArray(regularTracks);
-        currentTrackIndex = 0;
-        playNext();
-    };
+        playPauseBtn.onclick = () => {
+            if (isPlaying) { player.pause(); updateUI(false); }
+            else { player.play(); updateUI(true); }
+        };
 
-    playPauseBtn.onclick = () => {
-        if (isPlaying) { player.pause(); updateUI(false); }
-        else { player.play(); updateUI(true); }
-    };
+        stopBtn.onclick = () => {
+            player.pause();
+            player.currentTime = 0;
+            updateUI(false);
+            statusText.innerText = "Stopped.";
+        };
 
-    stopBtn.onclick = () => {
-        player.pause();
-        player.currentTime = 0;
-        updateUI(false);
-        statusText.innerText = "Stopped.";
-    };
+        skipBtn.onclick = () => { playNext(); };
 
-    volumeSlider.oninput = () => { player.volume = volumeSlider.value; };
-    player.onended = () => { playNext(); };
+        volumeSlider.oninput = () => { player.volume = volumeSlider.value; };
+        player.onended = () => { playNext(); };
     </script>
 </body>
 </html>
