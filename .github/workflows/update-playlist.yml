@@ -5,6 +5,9 @@ on:
     - cron: '*/30 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update-playlist:
     runs-on: ubuntu-latest
@@ -17,9 +20,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
       - name: Install rclone
         run: |
           curl -fsSL https://rclone.org/install.sh | sudo bash
+
       - name: Configure rclone for Cloudflare R2
         run: |
           mkdir -p ~/.config/rclone
@@ -31,37 +39,51 @@ jobs:
           secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}
           endpoint = https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
           acl = private
+          no_check_bucket = true
           EOF
-      - name: List R2 bucket files
+
+      - name: List MP3 files from R2
+        id: list_files
         run: |
-          echo "Listing files in R2 bucket..."
-          rclone ls r2:${R2_BUCKET_NAME} | grep -i '\.mp3$' | awk '{print $2}' | sort > /tmp/r2_files.txt
-          echo "Found $(wc -l < /tmp/r2_files.txt) mp3 files"
-          cat /tmp/r2_files.txt
+          FILES=$(rclone lsf r2:my-radio-station --include "*.mp3" | sort)
+          echo "files<<FEOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "FEOF" >> $GITHUB_OUTPUT
+          echo "Found files:"
+          echo "$FILES"
+
       - name: Generate updated playlist
         run: |
           python3 << 'PYEOF'
-          import re
-          r2_url = "${{ env.R2_PUBLIC_URL }}"
-          with open("/tmp/r2_files.txt") as f:
-              files = [line.strip() for line in f if line.strip()]
-          with open("index.html") as f:
+          import re, os
+
+          files_str = """${{ steps.list_files.outputs.files }}"""
+          files = [f.strip() for f in files_str.strip().split('\n') if f.strip()]
+
+          base_url = os.environ.get('R2_PUBLIC_URL', 'https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev')
+
+          with open("index.html", "r") as f:
               html = f.read()
-          tracks_entries = []
-          for fn in sorted(files):
-              name = fn.replace(".mp3", "").replace("_", " ").replace("-", " ").title()
-              tracks_entries.append(f'    {{ url: "{r2_url}/{fn}", name: "{name}" }}')
-          new_tracks = "const tracks = [\n" + ",\n".join(tracks_entries) + "\n  ];"
+
+          new_tracks = ',\n'.join(
+              [f'    {{ url: "{base_url}/{fn}", name: "{fn.replace(".mp3","").replace("_"," ")}" }}'
+               for fn in files]
+          )
+
           pattern = r'const tracks\s*=\s*\[.*?\];'
-          new_html = re.sub(pattern, new_tracks, html, flags=re.DOTALL)
+          new_tracks_html = f'const tracks = [\n{new_tracks}\n  ];'
+          new_html = re.sub(pattern, new_tracks_html, html, flags=re.DOTALL)
+
           with open("index.html", "w") as f:
               f.write(new_html)
-          print(f"Updated playlist with {len(files)} tracks")
+              print(f"Updated playlist with {len(files)} tracks")
           PYEOF
+
       - name: Check for changes
         id: changes
         run: |
           git diff --quiet index.html && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
       - name: Commit and push changes
         if: steps.changes.outputs.changed == 'true'
         run: |
