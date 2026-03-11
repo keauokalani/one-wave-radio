@@ -45,42 +45,8 @@
     <audio id="player" preload="none"></audio>
     <script>
         const tracks = [
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/2000_futuristic_brandy.mp3", name: "2000 Futuristic Brandy" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/90s_classic_brandy.mp3", name: "90s Classic Brandy" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Country_Living.mp3", name: "Country Living" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Bounce.mp3", name: "Island Bounce" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_Soul_Sunset_V2.mp3", name: "Island Soul Sunset V2" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_soul_heavybass.mp3", name: "Island Soul Heavybass" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_soul_onedrop.mp3", name: "Island Soul Onedrop" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Island_sunset_instrumental.mp3", name: "Island Sunset Instrumental" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Kaucoffee_Islandreggae.mp3", name: "Kau Coffee Island Reggae" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Minimaldrill_trap.mp3", name: "Minimal Drill Trap" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Nvr_say_goodbye_brandy.mp3", name: "Nvr Say Goodbye Brandy" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/OWR_MainStation_ID.mp3", name: "OWR Main Station ID" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/OneWaveRadio_Station_ID2.mp3", name: "One Wave Radio Station ID 2" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/OneWaveRadio_Station_ID3.mp3", name: "One Wave Radio Station ID 3" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/OneWaveRadio_Station_ID4.mp3", name: "One Wave Radio Station ID 4" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Slowjamballad_brandy.mp3", name: "Slow Jam Ballad Brandy" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/Spacetrap_futuristic.mp3", name: "Space Trap Futuristic" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/UK_Lovers_Reggae.mp3", name: "UK Lovers Reggae" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/atmosphericdancehall_drake.mp3", name: "Atmospheric Dancehall Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/bell_noir.mp3", name: "Bell Noir" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/darklane_latenight_drake.mp3", name: "Dark Lane Late Night Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/dubtouch_reggae.mp3", name: "Dub Touch Reggae" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/emotionalspace_piano_drake.mp3", name: "Emotional Space Piano Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/industrial_street.mp3", name: "Industrial Street" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/island_horizon.mp3", name: "Island Horizon" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/islandroots_reflections.mp3", name: "Island Roots Reflections" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/kaucoffee_islandcountry.mp3", name: "Kau Coffee Island Country" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/latenight_luxury_trap.mp3", name: "Late Night Luxury Trap" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/luxury_glossy_trap.mp3", name: "Luxury Glossy Trap" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/midnightdrift_drake.mp3", name: "Midnight Drift Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/quiet_reflection.mp3", name: "Quiet Reflection" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/rnb_midtempo_brandy.mp3", name: "RnB Midtempo Brandy" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_four_drake.mp3", name: "Version Four Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_three_drake.mp3", name: "Version Three Drake" },
-    { url: "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/version_two_drake.mp3", name: "Version Two Drake" },
-    ];
+
+  ];
 
                 const stationIDTracks = ["OneWaveRadio_Station_ID2.mp3", "OneWaveRadio_Station_ID3.mp3", "OneWaveRadio_Station_ID4.mp3", "OWR_MainStation_ID.mp3"];
         const regularTracks = tracks.filter(t => !stationIDTracks.includes(t.url.split('/').pop()));
