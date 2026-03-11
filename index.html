@@ -1,248 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-
-<meta charset="UTF-8">
-<title>One Wave Radio</title>
-
-<style>
-
-body{
-background:#000;
-color:#fff;
-font-family:-apple-system,sans-serif;
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-margin:0;
-}
-
-.player{
-position:relative;
-width:520px;
-border-radius:20px;
-overflow:hidden;
-box-shadow:0 5px 30px rgba(0,0,0,0.5);
-background:#111;
-}
-
-.player img{
-width:100%;
-display:block;
-}
-
-.controls{
-position:absolute;
-bottom:0;
-left:0;
-right:0;
-padding:15px;
-background:rgba(0,0,0,0.65);
-text-align:center;
-}
-
-button{
-background:#00c853;
-border:none;
-padding:12px 20px;
-margin:4px;
-color:white;
-font-weight:bold;
-border-radius:20px;
-cursor:pointer;
-}
-
-button:hover{
-background:#00e676;
-}
-
-#volumeSlider{
-width:200px;
-margin-top:6px;
-}
-
-#status{
-margin-bottom:8px;
-font-size:14px;
-}
-
-</style>
-
+  <meta charset='UTF-8'>
+  <title>ONE WAVE RADIO</title>
+  <style>
+body{ background:#000; color:#fff; font-family:-apple-system,sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+.player{ position:relative; width:520px; border-radius:20px; overflow:hidden; box-shadow:0 5px 30px rgba(0,0,0,0.5); background:#111; }
+.player img{ width:100%; display:block; }
+.controls{ position:absolute; bottom:0; left:0; right:0; padding:15px; background:rgba(0,0,0,0.65); text-align:center; }
+button{ background:#00c853; border:none; padding:12px 20px; margin:4px; color:white; font-weight:bold; border-radius:20px; cursor:pointer; }
+button:hover{ background:#00e676; }
+#volumeSlider{ width:200px; margin-top:6px; }
+#status{ margin-bottom:8px; font-size:14px; }
+#nowPlaying{ margin-top:6px; font-size:13px; color:#aaa; }
+#liveClock{ margin-top:8px; font-size:12px; color:#888; }
+  </style>
 </head>
-
 <body>
+  <div class='player'>
+    <img src='New ONE WAVE RADIO LOGO.png'>
+    <div class='controls'>
+      <div id='status'>Ready to play</div>
+      <button id='playBtn'>TUNE IN</button>
+      <div id='playerControls' style='display:none;'>
+        <button id='playPauseBtn'>PAUSE</button>
+        <button id='stopBtn'>STOP</button>
+        <button id='skipBtn'>SKIP</button>
+        <br>
+        <input type='range' id='volumeSlider' min='0' max='1' step='0.01' value='1'>
+      </div>
+      <div id='nowPlaying'>Loading...</div>
+      <div id='liveClock'></div>
+    </div>
+  </div>
+  <audio id='player' crossorigin='anonymous'></audio>
+  <script>
+var bucketURL='https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev';
+var tracks=[],shuffledTracks=[],currentTrackIndex=0;
+var player=document.getElementById('player');
+var playBtn=document.getElementById('playBtn');
+var playPauseBtn=document.getElementById('playPauseBtn');
+var stopBtn=document.getElementById('stopBtn');
+var skipBtn=document.getElementById('skipBtn');
+var volumeSlider=document.getElementById('volumeSlider');
+var statusText=document.getElementById('status');
+var playerControls=document.getElementById('playerControls');
+var nowPlaying=document.getElementById('nowPlaying');
+var liveClock=document.getElementById('liveClock');
 
-<div class="player">
+// Live clock for station ID timing
+function updateClock(){
+  var now=new Date();
+  var t=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  liveClock.textContent=t;
+}
+setInterval(updateClock,1000);
+updateClock();
 
-<img src="New ONE WAVE RADIO LOGO.png">
-
-<div class="controls">
-
-<div id="status">Ready to play</div>
-
-<button id="playBtn">TUNE IN</button>
-
-<div id="playerControls" style="display:none;">
-
-<button id="playPauseBtn">PAUSE</button>
-<button id="stopBtn">STOP</button>
-<button id="skipBtn">SKIP</button>
-
-<br>
-
-<input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-
-</div>
-
-</div>
-
-</div>
-
-<audio id="player"></audio>
-
-<script>
-
-const bucketURL = "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
-
-let tracks=[];
-let shuffledTracks=[];
-let currentTrackIndex=0;
-
-const player=document.getElementById("player");
-const playBtn=document.getElementById("playBtn");
-const playPauseBtn=document.getElementById("playPauseBtn");
-const stopBtn=document.getElementById("stopBtn");
-const skipBtn=document.getElementById("skipBtn");
-const volumeSlider=document.getElementById("volumeSlider");
-const statusText=document.getElementById("status");
-const playerControls=document.getElementById("playerControls");
-
+// Shuffle array utility
 function shuffleArray(arr){
-
-let a=[...arr];
-
-for(let i=a.length-1;i>0;i--){
-
-const j=Math.floor(Math.random()*(i+1));
-
-[a[i],a[j]]=[a[j],a[i]];
-
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=a[i];a[i]=a[j];a[j]=tmp;
+  }
+  return a;
 }
 
-return a;
-
+// JSON playlist reader - consume automation output
+async function fetchPlaylistJSON(){
+  try{
+    var r=await fetch('playlists/current_playlist.json');
+    if(r.ok){
+      var data=await r.json();
+      if(data.tracks&&data.tracks.length>0){
+        tracks=data.tracks.map(function(t){
+          return{url:t.url||(bucketURL+'/'+t.file),name:t.name||t.file||'Unknown'};
+        });
+        return true;
+      }
+    }
+  }catch(e){console.log('No JSON playlist, falling back to bucket scan');}
+  return false;
 }
 
+// Fallback: fetch tracks from Cloudflare R2 with CORS handling
+async function fetchTracksFromBucket(){
+  var r=await fetch(bucketURL,{mode:'cors'});
+  var text=await r.text();
+  var parser=new DOMParser();
+  var doc=parser.parseFromString(text,'text/html');
+  var links=doc.querySelectorAll('a');
+  tracks=[];
+  for(var i=0;i<links.length;i++){
+    if(links[i].href.endsWith('.mp3')){
+      var file=links[i].href.split('/').pop();
+      tracks.push({url:bucketURL+'/'+file,name:file});
+    }
+  }
+}
+
+// Main fetch with JSON playlist reader and bucket fallback
 async function fetchTracks(){
-
-const response=await fetch(bucketURL);
-const text=await response.text();
-
-const parser=new DOMParser();
-const xml=parser.parseFromString(text,"text/html");
-
-const links=[...xml.querySelectorAll("a")];
-
-tracks=[];
-
-links.forEach(link=>{
-
-if(link.href.endsWith(".mp3")){
-
-const file=link.href.split("/").pop();
-
-tracks.push({
-
-url:bucketURL+"/"+file,
-name:file
-
-});
-
+  var got=await fetchPlaylistJSON();
+  if(!got){await fetchTracksFromBucket();}
+  shuffledTracks=shuffleArray(tracks);
+  currentTrackIndex=0;
 }
 
-});
-
-shuffledTracks=shuffleArray(tracks);
-
-currentTrackIndex=0;
-
-}
-
+// Auto-advance to next song
 function playNext(){
-
-if(currentTrackIndex>=shuffledTracks.length){
-
-shuffledTracks=shuffleArray(tracks);
-currentTrackIndex=0;
-
+  if(currentTrackIndex>=shuffledTracks.length){
+    shuffledTracks=shuffleArray(tracks);currentTrackIndex=0;
+  }
+  var track=shuffledTracks[currentTrackIndex];
+  currentTrackIndex++;
+  statusText.innerText='Now playing: '+track.name;
+  nowPlaying.innerText=track.name;
+  player.src=track.url;
+  player.play();
 }
 
-const track=shuffledTracks[currentTrackIndex];
-
-currentTrackIndex++;
-
-statusText.innerText="Now playing: "+track.name;
-
-player.src=track.url;
-
-player.play();
-
-}
-
-playBtn.onclick=async()=>{
-
-await fetchTracks();
-
-playNext();
-
-playBtn.style.display="none";
-playerControls.style.display="block";
-
+playBtn.onclick=async function(){
+  await fetchTracks();
+  playNext();
+  playBtn.style.display='none';
+  playerControls.style.display='block';
 };
 
-playPauseBtn.onclick=()=>{
-
-if(player.paused){
-
-player.play();
-playPauseBtn.innerText="PAUSE";
-
-}else{
-
-player.pause();
-playPauseBtn.innerText="PLAY";
-
-}
-
+playPauseBtn.onclick=function(){
+  if(player.paused){player.play();playPauseBtn.innerText='PAUSE';}
+  else{player.pause();playPauseBtn.innerText='PLAY';}
 };
 
-stopBtn.onclick=()=>{
+stopBtn.onclick=function(){player.pause();player.currentTime=0;};
+skipBtn.onclick=function(){playNext();};
+volumeSlider.oninput=function(){player.volume=volumeSlider.value;};
 
-player.pause();
-player.currentTime=0;
-
-};
-
-skipBtn.onclick=()=>{
-
-playNext();
-
-};
-
-volumeSlider.oninput=()=>{
-
-player.volume=volumeSlider.value;
-
-};
-
-player.onended=()=>{
-
-playNext();
-
-};
-
-</script>
-
+// Auto-advance to next song when current ends
+player.onended=function(){playNext();};
+  </script>
 </body>
 </html>
