@@ -5,68 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ONE WAVE RADIO</title>
 <style>
-body{margin:0;padding:0;background:#0a0a0a;font-family:'Courier New',monospace;display:flex;justify-content:center;align-items:center;min-height:100vh;}
-.player-container{text-align:center;padding:10px 15px;border:none;border-radius:15px;background:#ffffff;max-width:380px;width:90%;color:#333;}
-
-.status{color:#666;margin:2px 0;font-size:0.85em;}
-.now-playing{color:#333;margin:2px 0;font-size:1.1em;min-height:1.5em;}
-button{background:#333;color:#fff;border:none;padding:8px 20px;margin:3px;border-radius:8px;cursor:pointer;font-family:'Courier New',monospace;font-weight:bold;font-size:1em;}
-button:hover{background:#555;}
-.controls{margin-top:5px;}
-.volume-control{margin-top:5px;color:#333;}
-input[type='range']{width:200px;accent-color:#333;}
-#playBtn{font-size:1.2em;padding:15px 50px;}
-#playerControls{display:none;}
-.player-image{margin-bottom:0;}
-.player-image img{max-width:200px;width:100%;border-radius:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;font-family:'Courier New',monospace;display:flex;justify-content:center;align-items:center;min-height:100vh;}
+.player-wrapper{position:relative;display:inline-block;}
+.player-wrapper img{display:block;max-width:100%;height:auto;}
+.controls-overlay{position:absolute;bottom:0;left:0;right:0;
+background:linear-gradient(transparent,rgba(0,0,0,0.85));
+padding:12px 15px 15px;text-align:center;}
+.status{color:#ccc;font-size:0.75em;margin-bottom:2px;}
+.now-playing{color:#fff;font-size:0.85em;margin-bottom:6px;min-height:1.2em;}
+.btn-row{margin-bottom:6px;}
+.btn-row button{background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);
+padding:6px 16px;margin:0 3px;border-radius:5px;cursor:pointer;font-family:inherit;font-size:0.75em;font-weight:bold;}
+.btn-row button:hover{background:rgba(255,255,255,0.35);}
+.volume-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px;}
+.volume-row label{color:#ccc;font-size:0.7em;}
+.volume-row input[type=range]{width:100px;accent-color:#fff;}
+.tune-in-btn{background:#ff6600;color:#fff;border:none;padding:6px 24px;border-radius:20px;
+cursor:pointer;font-family:inherit;font-size:0.8em;font-weight:bold;}
+.tune-in-btn:hover{background:#ff8833;}
 </style>
 </head>
 <body>
-<div class="player-container">
-<div class="player-image">
-<img src="New ONE WAVE RADIO LOGO.png" alt="ONE WAVE RADIO Logo">
-</div>
-<p class="status" id="statusText">Click play to start the broadcast</p>
-<p class="now-playing" id="nowPlaying"></p>
-<button id="playBtn">PLAY</button>
-<audio id="player" crossorigin="anonymous"></audio>
-<div id="playerControls">
-<div class="controls">
+<div class="player-wrapper">
+<img src="New ONE WAVE RADIO LOGO.png" alt="ONE WAVE RADIO">
+<div class="controls-overlay">
+<div class="status" id="statusText">Click Tune In to start the broadcast</div>
+<div class="now-playing" id="nowPlaying"></div>
+<div class="btn-row" id="transportBtns" style="display:none;">
 <button id="playPauseBtn">PAUSE</button>
 <button id="stopBtn">STOP</button>
 <button id="skipBtn">SKIP</button>
 </div>
-</div>
-<div class="volume-control">
-<label>Volume: </label>
+<div class="volume-row">
+<label>Volume:</label>
 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
 </div>
+<button class="tune-in-btn" id="tuneInBtn">TUNE IN</button>
+</div>
+<audio id="player" crossorigin="anonymous"></audio>
 </div>
 <script>
-var bucketURL='https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev';
+var bucketURL="https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
 var tracks=[],shuffledTracks=[],currentTrackIndex=0;
-var player=document.getElementById('player');
-var statusText=document.getElementById('statusText');
-var nowPlaying=document.getElementById('nowPlaying');
-var playBtn=document.getElementById('playBtn');
-var playerControls=document.getElementById('playerControls');
-var playPauseBtn=document.getElementById('playPauseBtn');
-var stopBtn=document.getElementById('stopBtn');
-var skipBtn=document.getElementById('skipBtn');
-var volumeSlider=document.getElementById('volumeSlider');
-player.volume=volumeSlider.value;
 var trackFiles=[
-'2000_futuristic_brandy.mp3','90s_classic_brandy.mp3','Country_Living.mp3','Island_Bounce.mp3','Island_Soul_Sunset_V2.mp3','Island_soul_heavybass.mp3','Island_soul_onedrop.mp3','Island_sunset_instrumental.mp3','Kaucoffee_islandreggae.mp3','Minimaldrill_trap.mp3','Nvr_say_goodbye_brandy.mp3','OWR_MainStation_ID.mp3','OneWaveRadio_Station_ID2.mp3','OneWaveRadio_Station_ID3.mp3','OneWaveRadio_Station_ID4.mp3','Slowjamballad_brandy.mp3','Spacetrap_futuristic.mp3','TueMar10_News.mp3',
-'UK_Lovers_Reggae.mp3','atmosphericdancehall_drake.mp3','bell_noir.mp3','darklane_latenight_drake.mp3','dubtouch_reggae.mp3','emotionalspace_piano_drake.mp3','industrial_street.mp3','island_horizon.mp3','islandroots_reflections.mp3','kaucoffee_islandcountry.mp3','latenight_luxury_trap.mp3','luxury_glossy_trap.mp3','midnightdrift_drake.mp3','quiet_reflection.mp3','rnb_midtempo_brandy.mp3','version_four_drake.mp3','version_three_drake.mp3','version_two_drake.mp3'
+"2000_futuristic_brandy.mp3",
+"90s_classic_brandy.mp3",
+"Country_Living.mp3",
+"Island_Bounce.mp3",
+"Island_Soul_Sunset_V2.mp3",
+"Island_soul_heavybass.mp3",
+"Island_soul_onedrop.mp3",
+"Island_sunset_instrumental.mp3",
+"Kaucoffee_islandreggae.mp3",
+"Minimaldrill_trap.mp3",
+"Nvr_say_goodbye_brandy.mp3",
+"OWR_MainStation_ID.mp3",
+"OneWaveRadio_Station_ID2.mp3",
+"OneWaveRadio_Station_ID3.mp3",
+"OneWaveRadio_Station_ID4.mp3",
+"Slowjamballad_brandy.mp3",
+"Spacetrap_futuristic.mp3",
+"TueMar10_News.mp3",
+"UK_Lovers_Reggae.mp3",
+"atmosphericdancehall_drake.mp3",
+"bell_noir.mp3",
+"darklane_latenight_drake.mp3",
+"dubtouch_reggae.mp3",
+"emotionalspace_piano_drake.mp3",
+"industrial_street.mp3",
+"island_horizon.mp3",
+"islandroots_reflections.mp3",
+"kaucoffee_islandcountry.mp3",
+"latenight_luxury_trap.mp3",
+"luxury_glossy_trap.mp3",
+"midnightdrift_drake.mp3",
+"quiet_reflection.mp3",
+"rnb_midtempo_brandy.mp3",
+"version_four_drake.mp3",
+"version_three_drake.mp3",
+"version_two_drake.mp3"
 ];
-function shuffleArray(arr){for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}return arr;}
-function fetchTracks(){tracks=trackFiles.map(function(f){return{name:f.replace(/_/g,' ').replace('.mp3',''),url:bucketURL+'/'+f};});shuffledTracks=shuffleArray(tracks.slice());currentTrackIndex=0;statusText.textContent='Ready - '+tracks.length+' tracks loaded';}
-function playNext(){if(shuffledTracks.length===0)return;if(currentTrackIndex>=shuffledTracks.length){shuffledTracks=shuffleArray(tracks.slice());currentTrackIndex=0;}var track=shuffledTracks[currentTrackIndex];player.src=track.url;player.play();nowPlaying.textContent='Now playing: '+track.name;currentTrackIndex++;}
-playBtn.onclick=function(){fetchTracks();playNext();playBtn.style.display='none';playerControls.style.display='block';};
-playPauseBtn.onclick=function(){if(player.paused){player.play();playPauseBtn.innerText='PAUSE';}else{player.pause();playPauseBtn.innerText='PLAY';}};
-stopBtn.onclick=function(){player.pause();player.currentTime=0;};
-skipBtn.onclick=function(){playNext();};
-volumeSlider.oninput=function(){player.volume=volumeSlider.value;};
+function shuffleArray(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function fetchTracks(){tracks=trackFiles.map(function(f){return{title:f.replace(/_/g," ").replace(/\.mp3$/,""),url:bucketURL+"/"+f};});shuffledTracks=shuffleArray(tracks.slice());document.getElementById("statusText").textContent="Ready - "+tracks.length+" tracks loaded";}
+function playNext(){if(shuffledTracks.length===0)return;if(currentTrackIndex>=shuffledTracks.length){shuffledTracks=shuffleArray(tracks.slice());currentTrackIndex=0;}var t=shuffledTracks[currentTrackIndex];currentTrackIndex++;var p=document.getElementById("player");p.src=t.url;p.play();document.getElementById("nowPlaying").textContent="Now playing: "+t.title;document.getElementById("transportBtns").style.display="block";document.getElementById("tuneInBtn").style.display="none";}
+fetchTracks();
+var player=document.getElementById("player");
+var volumeSlider=document.getElementById("volumeSlider");
+player.volume=0.7;
+document.getElementById("tuneInBtn").onclick=function(){playNext();};
+document.getElementById("playPauseBtn").onclick=function(){if(player.paused){player.play();this.textContent="PAUSE";}else{player.pause();this.textContent="PLAY";}};
+document.getElementById("stopBtn").onclick=function(){player.pause();player.currentTime=0;document.getElementById("nowPlaying").textContent="";document.getElementById("statusText").textContent="Stopped";document.getElementById("playPauseBtn").textContent="PLAY";document.getElementById("transportBtns").style.display="none";document.getElementById("tuneInBtn").style.display="inline-block";};
+document.getElementById("skipBtn").onclick=function(){playNext();};
+volumeSlider.oninput=function(){player.volume=this.value;};
 player.onended=function(){playNext();};
 </script>
 </body>
