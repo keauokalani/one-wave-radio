@@ -175,7 +175,7 @@
       "Softly_loving_you.mp3",
       "Softly_loving_you_main.mp3",
       "Softlylovingyou_megan_version.mp3",
-      "Yahweh.mp3",
+      "Yahweh.mp3"
     ];
 
     /* STATION IDs ONLY — THESE DO NOT SHUFFLE WITH THE MUSIC */
@@ -187,11 +187,11 @@
     ];
 
     var tracks = [];
-    var shuffledTracks = [];
-    var currentTrackIndex = 0;
+    var remainingTracks = [];
     var pendingStationID = false;
     var lastHourTriggered = null;
     var isPlayingStationID = false;
+    var currentTrack = null;
 
     var player = document.getElementById("player");
     var volumeSlider = document.getElementById("volumeSlider");
@@ -213,36 +213,36 @@
       return a;
     }
 
-    function fetchTracks() {
-      tracks = trackFiles.map(function(f) {
+    function buildTrackObjects(files) {
+      return files.map(function(f) {
         return {
+          file: f,
           title: f.replace(/_/g, " ").replace(/\.mp3$/i, ""),
           url: bucketURL + "/" + encodeURIComponent(f)
         };
       });
+    }
 
-      shuffledTracks = shuffleArray(tracks.slice());
+    function refillQueue() {
+      remainingTracks = shuffleArray(tracks.slice());
+      console.log("New shuffle cycle:", remainingTracks.map(function(t) { return t.title; }));
+    }
+
+    function fetchTracks() {
+      tracks = buildTrackObjects(trackFiles);
+      refillQueue();
       statusText.textContent = "Ready - " + tracks.length + " tracks loaded";
     }
 
-    function playNext() {
-      if (shuffledTracks.length === 0) return;
-
-      if (currentTrackIndex >= shuffledTracks.length) {
-        shuffledTracks = shuffleArray(tracks.slice());
-        currentTrackIndex = 0;
-      }
-
-      var t = shuffledTracks[currentTrackIndex];
-      currentTrackIndex++;
-
+    function startTrack(trackObj) {
+      currentTrack = trackObj;
       isPlayingStationID = false;
 
       player.pause();
       player.currentTime = 0;
-      player.src = t.url;
+      player.src = trackObj.url;
 
-      nowPlaying.textContent = "Now playing: " + t.title;
+      nowPlaying.textContent = "Now playing: " + trackObj.title;
       transportBtns.style.display = "block";
       tuneInBtn.style.display = "none";
       statusText.textContent = "Loading broadcast...";
@@ -251,16 +251,27 @@
         statusText.textContent = "Live now";
         playPauseBtn.textContent = "PAUSE";
       }).catch(function(err) {
-        console.error("Playback error:", err);
+        console.error("Playback error:", err, trackObj.file);
         statusText.textContent = "Playback failed, skipping...";
+        currentTrack = null;
         setTimeout(playNext, 500);
       });
+    }
+
+    function playNext() {
+      if (remainingTracks.length === 0) {
+        refillQueue();
+      }
+
+      var nextTrack = remainingTracks.shift();
+      startTrack(nextTrack);
     }
 
     function playStationID() {
       var idFile = stationIDs[Math.floor(Math.random() * stationIDs.length)];
 
       isPlayingStationID = true;
+      currentTrack = null;
 
       player.pause();
       player.currentTime = 0;
@@ -312,6 +323,7 @@
       transportBtns.style.display = "none";
       tuneInBtn.style.display = "inline-block";
 
+      currentTrack = null;
       isPlayingStationID = false;
       pendingStationID = false;
     };
@@ -320,6 +332,7 @@
       if (isPlayingStationID) {
         isPlayingStationID = false;
       }
+      currentTrack = null;
       playNext();
     };
 
@@ -347,6 +360,7 @@
         isPlayingStationID = false;
       }
 
+      currentTrack = null;
       setTimeout(playNext, 500);
     };
 
