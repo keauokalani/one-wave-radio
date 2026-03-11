@@ -112,14 +112,27 @@
             playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
         }
 
-        btn.onclick = () => {
-            console.log("Button clicked!");
-            isFirstPlay = true;
-            lastHourPlayed = -1;
-            shuffledTracks = shuffleArray(regularTracks);
-            currentTrackIndex = 0;
-            playNext();
-        };
+        async function fetchTracks() {
+                    const response = await fetch('https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev', {
+                                    headers: { 'Authorization': 'Bearer XEYwnS1ls0JmAzZzFkQXSXhB8DzY9yVOosDKTp1j' }
+                    });
+                    const files = await response.json();
+
+                    tracks.length = 0; // Clear existing track. 
+                   files.forEach(file => {
+                                   tracks.push({
+                                                       url: `https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/${file.name}`,
+                                                       name: file.name
+                                   });
+                   });
+
+                    shuffledTracks = shuffleArray(tracks.filter(t => !stationIDTracks.includes(t.url.split('/').pop())));
+                    currentTrackIndex = 0;
+        }.  
+          document.getElementById('playBtn').onclick = async () => {
+                      await fetchTracks();
+                      playNext();
+          };
 
         playPauseBtn.onclick = () => {
             if (isPlaying) { player.pause(); updateUI(false); }
