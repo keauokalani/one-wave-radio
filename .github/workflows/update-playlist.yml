@@ -15,6 +15,7 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET_NAME: my-radio-station
       R2_PUBLIC_URL: https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,6 +50,10 @@ jobs:
           echo "FEOF" >> $GITHUB_OUTPUT
           echo "Found files:"
           echo "$FILES"
+          # Count files
+          FILE_COUNT=$(echo "$FILES" | grep -c '.mp3' || true)
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "Total .mp3 files found: $FILE_COUNT"
 
       - name: Generate updated playlist
         run: |
@@ -58,23 +63,65 @@ jobs:
           files_str = """${{ steps.list_files.outputs.files }}"""
           files = [f.strip() for f in files_str.strip().split('\n') if f.strip()]
 
+          # SAFEGUARD: If no .mp3 files found from R2, do NOT modify index.html
+          if len(files) == 0:
+              print("WARNING: No .mp3 files returned from R2!")
+              print("This likely means R2 secrets are not configured or rclone failed.")
+              print("SKIPPING playlist update to protect existing tracks.")
+              import sys
+              sys.exit(0)
+
           base_url = os.environ.get('R2_PUBLIC_URL', 'https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev')
 
           with open("index.html", "r") as f:
               html = f.read()
 
-          new_tracks = ',\n'.join(
+          # Extract existing tracks from index.html
+          existing_pattern = r'const tracks\s*=\s*\[(.*?)\];'
+          existing_match = re.search(existing_pattern, html, flags=re.DOTALL)
+          existing_filenames = set()
+          if existing_match:
+              existing_block = existing_match.group(1)
+              # Extract filenames from existing track entries
+              url_pattern = r'url:\s*"[^"]*?/([^/"]+\.mp3)"'
+              for m in re.finditer(url_pattern, existing_block):
+                  existing_filenames.add(m.group(1))
+
+          # Determine which R2 files are NEW (not already in existing tracks)
+          new_files = [f for f in files if f not in existing_filenames]
+
+          if new_files:
+              print(f"Found {len(new_files)} new files to add: {new_files}")
+          else:
+              print("No new files to add. All R2 files already in playlist.")
+
+          # Build new track entries ONLY for new files
+          new_track_entries = ',\n'.join(
               [f'    {{ url: "{base_url}/{fn}", name: "{fn.replace(".mp3","").replace("_"," ")}" }}'
-               for fn in files]
+               for fn in new_files]
           )
 
-          pattern = r'const tracks\s*=\s*\[.*?\];'
-          new_tracks_html = f'const tracks = [\n{new_tracks}\n  ];'
-          new_html = re.sub(pattern, new_tracks_html, html, flags=re.DOTALL)
+          if new_files:
+              # MERGE: Append new tracks to the END of the existing tracks array
+              if existing_match:
+                  existing_block = existing_match.group(1).rstrip()
+                  # Remove trailing whitespace and check if existing block ends with comma
+                  if existing_block.strip() and not existing_block.rstrip().endswith(','):
+                      existing_block = existing_block.rstrip() + ','
+                  merged_tracks = existing_block + '\n' + new_track_entries
+              else:
+                  merged_tracks = new_track_entries
 
-          with open("index.html", "w") as f:
-              f.write(new_html)
-              print(f"Updated playlist with {len(files)} tracks")
+              new_tracks_html = f'const tracks = [\n{merged_tracks}\n  ];'
+              pattern = r'const tracks\s*=\s*\[.*?\];'
+              new_html = re.sub(pattern, new_tracks_html, html, flags=re.DOTALL)
+
+              with open("index.html", "w") as f:
+                  f.write(new_html)
+              print(f"Updated playlist: {len(existing_filenames)} existing + {len(new_files)} new = {len(existing_filenames) + len(new_files)} total tracks")
+          else:
+              print("No changes needed - playlist is up to date.")
+
           PYEOF
 
       - name: Check for changes
