@@ -1,155 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>One Wave Radio</title>
-    <style>
-        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; user-select: none; }
-        .player { position: relative; width: 520px; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.5); background: #111; }
-        .player-image-wrapper { position: relative; width: 100%; }
-        .player-image-wrapper img { display: block; width: 100%; height: auto; }
-        .controls-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 20px 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); }
-        .live-tag { color: #00ff00; font-size: 14px; font-weight: 900; letter-spacing: 4px; margin-bottom: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        #status { font-size: 16px; color: #333; text-align: center; min-height: 18px; }
-        #playBtn { background: #00c853; color: #fff; border: none; padding: 14px 50px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: pointer; letter-spacing: 2px; margin: 4px 0; }
-        #playBtn:hover { background: #00e676; }
-        #playerControls { display: none; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
-        #playerControls button { background: #333; color: #fff; border: none; padding: 10px 24px; font-size: 15px; border-radius: 20px; cursor: pointer; margin: 0 4px; }
-        #playerControls button:hover { background: #555; }
-        .btn-row { display: flex; gap: 10px; justify-content: center; }
-        #volumeSlider { width: 200px; accent-color: #00c853; }
-        @media (max-width: 540px) { .player { width: 95vw; } }
-    </style>
+
+<meta charset="UTF-8">
+<title>One Wave Radio</title>
+
+<style>
+
+body{
+background:#000;
+color:#fff;
+font-family:-apple-system,sans-serif;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+margin:0;
+}
+
+.player{
+position:relative;
+width:520px;
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 5px 30px rgba(0,0,0,0.5);
+background:#111;
+}
+
+.player img{
+width:100%;
+display:block;
+}
+
+.controls{
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+padding:15px;
+background:rgba(0,0,0,0.65);
+text-align:center;
+}
+
+button{
+background:#00c853;
+border:none;
+padding:12px 20px;
+margin:4px;
+color:white;
+font-weight:bold;
+border-radius:20px;
+cursor:pointer;
+}
+
+button:hover{
+background:#00e676;
+}
+
+#volumeSlider{
+width:200px;
+margin-top:6px;
+}
+
+#status{
+margin-bottom:8px;
+font-size:14px;
+}
+
+</style>
+
 </head>
+
 <body>
-    <div class="player">
-        <div class="player-image-wrapper">
-            <img src="New%20ONE%20WAVE%20RADIO%20LOGO.png" alt="One Wave Radio 24/7 Original Music by D. Oliveira">
-            <div class="controls-overlay">
-                <div class="live-tag"><div class="dot"></div> LIVE 24/7</div>
-                <div id="status">Ready to play</div>
-                <button id="playBtn">TUNE IN</button>
-                <div id="playerControls">
-                    <div class="btn-row">
-                        <button id="playPauseBtn">PAUSE</button>
-                        <button id="stopBtn">STOP</button>
-                        <button id="skipBtn">SKIP</button>
-                    </div>
-                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-                </div>
-            </div>
-        </div>
-    </div>
-    <audio id="player" preload="none"></audio>
-    <script>
-        const tracks = [
 
-  ];
+<div class="player">
 
-                const stationIDTracks = ["OneWaveRadio_Station_ID2.mp3", "OneWaveRadio_Station_ID3.mp3", "OneWaveRadio_Station_ID4.mp3", "OWR_MainStation_ID.mp3"];
-        const regularTracks = tracks.filter(t => !stationIDTracks.includes(t.url.split('/').pop()));
+<img src="New ONE WAVE RADIO LOGO.png">
 
-        const player = document.getElementById("player");
-        const btn = document.getElementById("playBtn");
-        const playPauseBtn = document.getElementById("playPauseBtn");
-        const stopBtn = document.getElementById("stopBtn");
-        const skipBtn = document.getElementById("skipBtn");
-        const playerControls = document.getElementById("playerControls");
-        const statusText = document.getElementById("status");
-        const volumeSlider = document.getElementById("volumeSlider");
+<div class="controls">
 
-        let isPlaying = false;
-        let shuffledTracks = [];
-        let currentTrackIndex = 0;
-        let isFirstPlay = true;
-        let lastHourPlayed = -1;
+<div id="status">Ready to play</div>
 
-        function shuffleArray(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
+<button id="playBtn">TUNE IN</button>
 
-        function playNext() {
-            const now = new Date();
-            const currentHour = now.getHours();
+<div id="playerControls" style="display:none;">
 
-            if (stationIDTracks.length > 0 && currentHour !== lastHourPlayed) {
-                lastHourPlayed = currentHour;
-                const idTracks = tracks.filter(t => stationIDTracks.includes(t.url.split('/').pop()));
-                if (idTracks.length > 0) {
-                    const pick = idTracks[Math.floor(Math.random() * idTracks.length)];
-                    statusText.innerText = "Now playing: " + pick.name;
-                    player.src = pick.url;
-                    player.play();
-                    updateUI(true);
-                    return;
-                }
-            }
+<button id="playPauseBtn">PAUSE</button>
+<button id="stopBtn">STOP</button>
+<button id="skipBtn">SKIP</button>
 
-            if (currentTrackIndex >= shuffledTracks.length) {
-                shuffledTracks = shuffleArray(regularTracks);
-                currentTrackIndex = 0;
-            }
+<br>
 
-            const track = shuffledTracks[currentTrackIndex];
-            currentTrackIndex++;
-            statusText.innerText = "Now playing: " + track.name;
-            player.src = track.url;
-            player.play();
-            updateUI(true);
-        }
+<input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
 
-        function updateUI(playing) {
-            btn.style.display = "none";
-            playerControls.style.display = "flex";
-            isPlaying = playing;
-            playPauseBtn.textContent = playing ? "PAUSE" : "PLAY";
-        }
+</div>
 
-        async function fetchTracks() {
-                    const response = await fetch('https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev', {
-                                    headers: { 'Authorization': 'Bearer XEYwnS1ls0JmAzZzFkQXSXhB8DzY9yVOosDKTp1j' }
-                    });
-                    const files = await response.json();
+</div>
 
-                    tracks.length = 0; // Clear existing track. 
-                   files.forEach(file => {
-                                   tracks.push({
-                                                       url: `https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev/${file.name}`,
-                                                       name: file.name
-                                   });
-                   });
+</div>
 
-                    shuffledTracks = shuffleArray(tracks.filter(t => !stationIDTracks.includes(t.url.split('/').pop())));
-                    currentTrackIndex = 0;
-        }.  
-          document.getElementById('playBtn').onclick = async () => {
-                      await fetchTracks();
-                      playNext();
-          };
+<audio id="player"></audio>
 
-        playPauseBtn.onclick = () => {
-            if (isPlaying) { player.pause(); updateUI(false); }
-            else { player.play(); updateUI(true); }
-        };
+<script>
 
-        stopBtn.onclick = () => {
-            player.pause();
-            player.currentTime = 0;
-            updateUI(false);
-            statusText.innerText = "Stopped.";
-        };
+const bucketURL = "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
 
-        skipBtn.onclick = () => { playNext(); };
+let tracks=[];
+let shuffledTracks=[];
+let currentTrackIndex=0;
 
-        volumeSlider.oninput = () => { player.volume = volumeSlider.value; };
-        player.onended = () => { playNext(); };
-    </script>
+const player=document.getElementById("player");
+const playBtn=document.getElementById("playBtn");
+const playPauseBtn=document.getElementById("playPauseBtn");
+const stopBtn=document.getElementById("stopBtn");
+const skipBtn=document.getElementById("skipBtn");
+const volumeSlider=document.getElementById("volumeSlider");
+const statusText=document.getElementById("status");
+const playerControls=document.getElementById("playerControls");
+
+function shuffleArray(arr){
+
+let a=[...arr];
+
+for(let i=a.length-1;i>0;i--){
+
+const j=Math.floor(Math.random()*(i+1));
+
+[a[i],a[j]]=[a[j],a[i]];
+
+}
+
+return a;
+
+}
+
+async function fetchTracks(){
+
+const response=await fetch(bucketURL);
+const text=await response.text();
+
+const parser=new DOMParser();
+const xml=parser.parseFromString(text,"text/html");
+
+const links=[...xml.querySelectorAll("a")];
+
+tracks=[];
+
+links.forEach(link=>{
+
+if(link.href.endsWith(".mp3")){
+
+const file=link.href.split("/").pop();
+
+tracks.push({
+
+url:bucketURL+"/"+file,
+name:file
+
+});
+
+}
+
+});
+
+shuffledTracks=shuffleArray(tracks);
+
+currentTrackIndex=0;
+
+}
+
+function playNext(){
+
+if(currentTrackIndex>=shuffledTracks.length){
+
+shuffledTracks=shuffleArray(tracks);
+currentTrackIndex=0;
+
+}
+
+const track=shuffledTracks[currentTrackIndex];
+
+currentTrackIndex++;
+
+statusText.innerText="Now playing: "+track.name;
+
+player.src=track.url;
+
+player.play();
+
+}
+
+playBtn.onclick=async()=>{
+
+await fetchTracks();
+
+playNext();
+
+playBtn.style.display="none";
+playerControls.style.display="block";
+
+};
+
+playPauseBtn.onclick=()=>{
+
+if(player.paused){
+
+player.play();
+playPauseBtn.innerText="PAUSE";
+
+}else{
+
+player.pause();
+playPauseBtn.innerText="PLAY";
+
+}
+
+};
+
+stopBtn.onclick=()=>{
+
+player.pause();
+player.currentTime=0;
+
+};
+
+skipBtn.onclick=()=>{
+
+playNext();
+
+};
+
+volumeSlider.oninput=()=>{
+
+player.volume=volumeSlider.value;
+
+};
+
+player.onended=()=>{
+
+playNext();
+
+};
+
+</script>
+
 </body>
 </html>
