@@ -175,10 +175,10 @@
       "Softly_loving_you.mp3",
       "Softly_loving_you_main.mp3",
       "Softlylovingyou_megan_version.mp3",
-      "Yahweh.mp3",
-      ];
+      "Yahweh.mp3"
+    ];
 
-    /* STATION IDs ONLY — THESE DO NOT SHUFFLE WITH THE MUSIC */
+    /* STATION IDs ONLY */
     var stationIDs = [
       "OWR_MainStation_ID.mp3",
       "OneWaveRadio_Station_ID2.mp3",
@@ -186,12 +186,32 @@
       "OneWaveRadio_Station_ID4.mp3"
     ];
 
+    /*
+      SPECIAL INSERTS
+      To use them, type a filename inside these arrays.
+
+      Example:
+      var pendingNewsFiles = ["Kau_Newsupdate.mp3"];
+      var pendingWeatherFiles = ["Kau_Weatherupdate.mp3"];
+      var pendingEmergencyFiles = ["Kau_Emergencyalert.mp3"];
+
+      Emergency alerts interrupt immediately.
+      News and weather wait until the current song ends.
+    */
+    var pendingNewsFiles = [];
+    var pendingWeatherFiles = [];
+    var pendingEmergencyFiles = [];
+
     var tracks = [];
     var remainingTracks = [];
     var pendingStationID = false;
     var lastHourTriggered = null;
     var isPlayingStationID = false;
+    var isPlayingSpecialInsert = false;
+    var isPlayingEmergency = false;
     var currentTrack = null;
+    var interruptedTrack = null;
+    var interruptedTime = 0;
 
     var player = document.getElementById("player");
     var volumeSlider = document.getElementById("volumeSlider");
@@ -218,9 +238,19 @@
         return {
           file: f,
           title: f.replace(/_/g, " ").replace(/\.mp3$/i, ""),
-          url: bucketURL + "/" + encodeURIComponent(f)
+          url: bucketURL + "/" + encodeURIComponent(f),
+          type: "music"
         };
       });
+    }
+
+    function buildSpecialObject(fileName, typeLabel) {
+      return {
+        file: fileName,
+        title: fileName.replace(/_/g, " ").replace(/\.mp3$/i, ""),
+        url: bucketURL + "/" + encodeURIComponent(fileName),
+        type: typeLabel
+      };
     }
 
     function refillQueue() {
@@ -234,9 +264,22 @@
       statusText.textContent = "Ready - " + tracks.length + " tracks loaded";
     }
 
+    function updateStatusForCurrentType() {
+      if (isPlayingEmergency) {
+        statusText.textContent = "Emergency Alert";
+      } else if (isPlayingStationID) {
+        statusText.textContent = "Station Identification";
+      } else if (isPlayingSpecialInsert && currentTrack && currentTrack.type === "news") {
+        statusText.textContent = "News Update";
+      } else if (isPlayingSpecialInsert && currentTrack && currentTrack.type === "weather") {
+        statusText.textContent = "Weather Update";
+      } else {
+        statusText.textContent = "Live now";
+      }
+    }
+
     function startTrack(trackObj) {
       currentTrack = trackObj;
-      isPlayingStationID = false;
 
       player.pause();
       player.currentTime = 0;
@@ -248,49 +291,147 @@
       statusText.textContent = "Loading broadcast...";
 
       player.play().then(function() {
-        statusText.textContent = "Live now";
         playPauseBtn.textContent = "PAUSE";
+        updateStatusForCurrentType();
       }).catch(function(err) {
         console.error("Playback error:", err, trackObj.file);
         statusText.textContent = "Playback failed, skipping...";
+
+        if (isPlayingEmergency) {
+          isPlayingEmergency = false;
+          resumeInterruptedTrack();
+          return;
+        }
+
+        if (isPlayingStationID) {
+          isPlayingStationID = false;
+        }
+
+        if (isPlayingSpecialInsert) {
+          isPlayingSpecialInsert = false;
+        }
+
         currentTrack = null;
         setTimeout(playNext, 500);
       });
     }
 
+    function playMusicTrack(trackObj) {
+      isPlayingStationID = false;
+      isPlayingSpecialInsert = false;
+      isPlayingEmergency = false;
+      startTrack(trackObj);
+    }
+
+    function playStationID() {
+      var idFile = stationIDs[Math.floor(Math.random() * stationIDs.length)];
+      isPlayingStationID = true;
+      isPlayingSpecialInsert = false;
+      isPlayingEmergency = false;
+      startTrack(buildSpecialObject(idFile, "stationID"));
+    }
+
+    function playEmergencyNow() {
+      if (pendingEmergencyFiles.length === 0) return;
+      if (isPlayingEmergency) return;
+
+      var emergencyFile = pendingEmergencyFiles.shift();
+
+      if (!player.paused && currentTrack && currentTrack.type === "music") {
+        interruptedTrack = currentTrack;
+        interruptedTime = player.currentTime || 0;
+      } else {
+        interruptedTrack = null;
+        interruptedTime = 0;
+      }
+
+      isPlayingEmergency = true;
+      isPlayingStationID = false;
+      isPlayingSpecialInsert = false;
+
+      startTrack(buildSpecialObject(emergencyFile, "emergency"));
+    }
+
+    function resumeInterruptedTrack() {
+      if (!interruptedTrack) {
+        playNext();
+        return;
+      }
+
+      var trackToResume = interruptedTrack;
+      var timeToResume = interruptedTime || 0;
+
+      interruptedTrack = null;
+      interruptedTime = 0;
+      isPlayingEmergency = false;
+      isPlayingStationID = false;
+      isPlayingSpecialInsert = false;
+      currentTrack = trackToResume;
+
+      player.pause();
+      player.src = trackToResume.url;
+      nowPlaying.textContent = "Now playing: " + trackToResume.title;
+      statusText.textContent = "Resuming broadcast...";
+
+      player.onloadedmetadata = function() {
+        player.onloadedmetadata = null;
+
+        try {
+          player.currentTime = timeToResume;
+        } catch (e) {
+          console.warn("Resume time failed:", e);
+        }
+
+        player.play().then(function() {
+          playPauseBtn.textContent = "PAUSE";
+          statusText.textContent = "Live now";
+        }).catch(function(err) {
+          console.error("Resume failed:", err);
+          currentTrack = null;
+          playNext();
+        });
+      };
+    }
+
     function playNext() {
+      if (pendingEmergencyFiles.length > 0) {
+        playEmergencyNow();
+        return;
+      }
+
+      if (pendingNewsFiles.length > 0) {
+        var newsFile = pendingNewsFiles.shift();
+        isPlayingSpecialInsert = true;
+        isPlayingStationID = false;
+        isPlayingEmergency = false;
+        startTrack(buildSpecialObject(newsFile, "news"));
+        return;
+      }
+
+      if (pendingWeatherFiles.length > 0) {
+        var weatherFile = pendingWeatherFiles.shift();
+        isPlayingSpecialInsert = true;
+        isPlayingStationID = false;
+        isPlayingEmergency = false;
+        startTrack(buildSpecialObject(weatherFile, "weather"));
+        return;
+      }
+
+      if (pendingStationID) {
+        pendingStationID = false;
+        playStationID();
+        return;
+      }
+
       if (remainingTracks.length === 0) {
         refillQueue();
       }
 
       var nextTrack = remainingTracks.shift();
-      startTrack(nextTrack);
-    }
-
-    function playStationID() {
-      var idFile = stationIDs[Math.floor(Math.random() * stationIDs.length)];
-
-      isPlayingStationID = true;
-      currentTrack = null;
-
-      player.pause();
-      player.currentTime = 0;
-      player.src = bucketURL + "/" + encodeURIComponent(idFile);
-
-      nowPlaying.textContent = "Now playing: One Wave Radio Station ID";
-      statusText.textContent = "Station Identification";
-
-      player.play().then(function() {
-        playPauseBtn.textContent = "PAUSE";
-      }).catch(function(err) {
-        console.error("Station ID playback error:", err);
-        isPlayingStationID = false;
-        playNext();
-      });
+      playMusicTrack(nextTrack);
     }
 
     fetchTracks();
-
     player.volume = 0.7;
 
     tuneInBtn.onclick = function() {
@@ -301,7 +442,7 @@
       if (player.paused) {
         player.play().then(function() {
           playPauseBtn.textContent = "PAUSE";
-          statusText.textContent = isPlayingStationID ? "Station Identification" : "Live now";
+          updateStatusForCurrentType();
         }).catch(function(err) {
           console.error("Resume error:", err);
         });
@@ -324,14 +465,29 @@
       tuneInBtn.style.display = "inline-block";
 
       currentTrack = null;
+      interruptedTrack = null;
+      interruptedTime = 0;
       isPlayingStationID = false;
+      isPlayingSpecialInsert = false;
+      isPlayingEmergency = false;
       pendingStationID = false;
     };
 
     skipBtn.onclick = function() {
+      if (isPlayingEmergency) {
+        isPlayingEmergency = false;
+        interruptedTrack = null;
+        interruptedTime = 0;
+      }
+
       if (isPlayingStationID) {
         isPlayingStationID = false;
       }
+
+      if (isPlayingSpecialInsert) {
+        isPlayingSpecialInsert = false;
+      }
+
       currentTrack = null;
       playNext();
     };
@@ -341,12 +497,15 @@
     };
 
     player.onended = function() {
-      if (isPlayingStationID) {
+      if (isPlayingEmergency) {
+        isPlayingEmergency = false;
+        resumeInterruptedTrack();
+      } else if (isPlayingStationID) {
         isPlayingStationID = false;
         playNext();
-      } else if (pendingStationID) {
-        pendingStationID = false;
-        playStationID();
+      } else if (isPlayingSpecialInsert) {
+        isPlayingSpecialInsert = false;
+        playNext();
       } else {
         playNext();
       }
@@ -356,8 +515,18 @@
       console.error("Track load error:", player.src);
       statusText.textContent = "Track failed, skipping...";
 
+      if (isPlayingEmergency) {
+        isPlayingEmergency = false;
+        resumeInterruptedTrack();
+        return;
+      }
+
       if (isPlayingStationID) {
         isPlayingStationID = false;
+      }
+
+      if (isPlayingSpecialInsert) {
+        isPlayingSpecialInsert = false;
       }
 
       currentTrack = null;
@@ -369,7 +538,7 @@
     };
 
     player.onplaying = function() {
-      statusText.textContent = isPlayingStationID ? "Station Identification" : "Live now";
+      updateStatusForCurrentType();
     };
 
     setInterval(function() {
@@ -383,6 +552,26 @@
         console.log("Top of the hour reached. Station ID queued.");
       }
     }, 10000);
+
+    /*
+      OPTIONAL HELPERS
+      You can use these if you ever want to trigger files in the code:
+      queueNews("Kau_Newsupdate.mp3");
+      queueWeather("Kau_Weatherupdate.mp3");
+      queueEmergency("Kau_Emergencyalert.mp3");
+    */
+    function queueNews(fileName) {
+      pendingNewsFiles.push(fileName);
+    }
+
+    function queueWeather(fileName) {
+      pendingWeatherFiles.push(fileName);
+    }
+
+    function queueEmergency(fileName) {
+      pendingEmergencyFiles.push(fileName);
+      playEmergencyNow();
+    }
   </script>
 </body>
 </html>
