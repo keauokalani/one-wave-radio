@@ -66,6 +66,43 @@
       width:min(92vw, 760px);
     }
 
+    .live-indicator{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.38);
+      backdrop-filter:blur(5px);
+      text-shadow:0 2px 8px rgba(0,0,0,0.7);
+      font-size:14px;
+      font-weight:bold;
+      letter-spacing:0.5px;
+    }
+
+    .live-dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#ff3b3b;
+      animation:pulse 1.4s infinite;
+    }
+
+    @keyframes pulse{
+      0%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(255,59,59,0.75);
+      }
+      70%{
+        transform:scale(1.08);
+        box-shadow:0 0 0 14px rgba(255,59,59,0);
+      }
+      100%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(255,59,59,0);
+      }
+    }
+
     .controls{
       display:flex;
       align-items:center;
@@ -90,49 +127,6 @@
     .controls button:hover{
       background:#0ea5e9;
       transform:translateY(-2px);
-    }
-
-    .live-indicator{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 14px;
-      border-radius:999px;
-      background:rgba(0,0,0,0.38);
-      backdrop-filter:blur(5px);
-      text-shadow:0 2px 8px rgba(0,0,0,0.7);
-      font-size:14px;
-      font-weight:bold;
-      letter-spacing:0.5px;
-    }
-
-    .live-dot{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      background:#ff3b3b;
-      box-shadow:0 0 0 rgba(255,59,59,0.8);
-      opacity:0.45;
-    }
-
-    .live-dot.active{
-      opacity:1;
-      animation:pulse 1.4s infinite;
-    }
-
-    @keyframes pulse{
-      0%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(255,59,59,0.75);
-      }
-      70%{
-        transform:scale(1.08);
-        box-shadow:0 0 0 14px rgba(255,59,59,0);
-      }
-      100%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(255,59,59,0);
-      }
     }
 
     #trackTitle{
@@ -180,10 +174,6 @@
         width:94vw;
       }
 
-      .controls{
-        gap:8px;
-      }
-
       .controls button{
         font-size:15px;
         padding:9px 14px;
@@ -206,19 +196,19 @@
     </nav>
 
     <div class="player-wrap">
-      <div class="live-indicator" id="liveIndicator">
-        <span class="live-dot" id="liveDot"></span>
-        <span id="liveText">OFF AIR</span>
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span>LIVE BROADCAST</span>
       </div>
 
       <div class="controls">
-        <button id="prevBtn" onclick="playPrev()">&#9198; Prev</button>
-        <button id="playBtn" onclick="togglePlay()">&#9654; Listen Live</button>
-        <button id="nextBtn" onclick="skipForward()">Next &#9197;</button>
+        <button onclick="playPrev()">&#9198; Prev</button>
+        <button id="listenBtn" onclick="startRadio()">&#9654; Listen Live</button>
+        <button onclick="skipForward()">Next &#9197;</button>
       </div>
 
-      <p id="trackTitle">Ready to play</p>
-      <p id="statusText">Broadcasting 24/7</p>
+      <p id="trackTitle">Tap Listen Live to tune in</p>
+      <p id="statusText">Streaming 24/7 Worldwide</p>
     </div>
 
   </div>
@@ -274,31 +264,15 @@
 
     var player = document.getElementById("player");
     var trackTitle = document.getElementById("trackTitle");
-    var statusText = document.getElementById("statusText");
-    var playBtn = document.getElementById("playBtn");
-    var liveDot = document.getElementById("liveDot");
-    var liveText = document.getElementById("liveText");
-
     var currentIndex = 0;
-    var startedOnce = false;
-
-    function setLiveState(isLive){
-      if(isLive){
-        liveDot.classList.add("active");
-        liveText.textContent = "LIVE RADIO";
-      } else {
-        liveDot.classList.remove("active");
-        liveText.textContent = "OFF AIR";
-      }
-    }
+    var tunedIn = false;
 
     function buildTrackObjects(files) {
       return files.map(function(f) {
         return {
           file: f,
           title: f.replace(/_/g, " ").replace(/\.mp3$/i, ""),
-          url: bucketURL + "/" + encodeURIComponent(f),
-          type: "music"
+          url: bucketURL + "/" + encodeURIComponent(f)
         };
       });
     }
@@ -330,64 +304,40 @@
       currentIndex = index;
       var t = tracks[index];
       trackTitle.textContent = "Now Playing: " + t.title;
-      statusText.textContent = "Broadcasting 24/7";
       player.src = t.url;
 
       player.play().then(function() {
-        playBtn.innerHTML = "&#10074;&#10074; Pause";
-        startedOnce = true;
-        setLiveState(true);
+        tunedIn = true;
       }).catch(function(e) {
         console.log("Playback error:", e);
-        statusText.textContent = "Tap Listen Live again if playback was blocked.";
-        setLiveState(false);
+        trackTitle.textContent = "Tap Listen Live to tune in";
       });
     }
 
-    function togglePlay() {
-      if (!startedOnce) {
+    function startRadio() {
+      if (!tunedIn) {
         startTrack(currentIndex);
-        return;
-      }
-
-      if (player.paused) {
-        player.play().then(function() {
-          playBtn.innerHTML = "&#10074;&#10074; Pause";
-          statusText.textContent = "Broadcasting 24/7";
-          setLiveState(true);
-        }).catch(function(e) {
-          console.log("Playback error:", e);
-          statusText.textContent = "Playback blocked. Tap again.";
-          setLiveState(false);
-        });
-      } else {
-        player.pause();
-        playBtn.innerHTML = "&#9654; Listen Live";
-        statusText.textContent = "Paused";
-        setLiveState(false);
       }
     }
 
     function skipForward() {
+      if (!tunedIn) {
+        startTrack(currentIndex);
+        return;
+      }
       startTrack(currentIndex + 1);
     }
 
     function playPrev() {
+      if (!tunedIn) {
+        startTrack(currentIndex);
+        return;
+      }
       startTrack(currentIndex - 1);
     }
 
     player.addEventListener("ended", function() {
       startTrack(currentIndex + 1);
-    });
-
-    player.addEventListener("pause", function() {
-      if (!player.ended) {
-        setLiveState(false);
-      }
-    });
-
-    player.addEventListener("play", function() {
-      setLiveState(true);
     });
   </script>
 </body>
