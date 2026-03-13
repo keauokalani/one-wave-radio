@@ -369,13 +369,15 @@
     }
 
     function startRadio() {
-      if (tunedIn) return;
 
-      if (emergencyEnabled && !emergencyPlayedThisSession) {
-        emergencyPlayedThisSession = true;
-        playTrackObject(makeTrackObject(EMERGENCY_FILE, "emergency"));
-        return;
-      }
+  if (tunedIn) return;
+
+  tunedIn = true;
+
+  // play news first
+  playTrackObject(makeTrackObject(NEWS_FILE, "news"));
+
+}
 
       startTrack(currentIndex);
     }
