@@ -253,26 +253,44 @@
       "rnb_midtempo_brandy.mp3",
       "version_four_drake.mp3",
       "version_three_drake.mp3",
-      "version_two_drake.mp3",
+      "version_two_drake.mp3"
+    ];
+
+    var stationIds = [
       "OWR_MainStation_ID.mp3",
       "OneWaveRadio_Station_ID2.mp3",
       "OneWaveRadio_Station_ID3.mp3",
-      "OneWaveRadio_Station_ID4.mp3",
-      "Awakeningofman_Newsupdate.mp3",
-      "ThursdayMarch12_Newsupdate.mp3"
+      "OneWaveRadio_Station_ID4.mp3"
     ];
+
+    var NEWS_FILE = "Kau_News_update.mp3";
+    var WEATHER_FILE = "Kau_Weather_update.mp3";
+    var EMERGENCY_FILE = "Emergency_Alert.mp3";
+
+    var emergencyEnabled = true;
 
     var player = document.getElementById("player");
     var trackTitle = document.getElementById("trackTitle");
     var currentIndex = 0;
     var tunedIn = false;
 
+    var insertQueue = [];
+    var currentTrackType = "music";
+    var pendingTopOfHourId = false;
+    var lastTriggeredHour = null;
+    var emergencyPlayedThisSession = false;
+
+    function formatTitle(filename) {
+      return filename.replace(/_/g, " ").replace(/\.mp3$/i, "");
+    }
+
     function buildTrackObjects(files) {
       return files.map(function(f) {
         return {
           file: f,
-          title: f.replace(/_/g, " ").replace(/\.mp3$/i, ""),
-          url: bucketURL + "/" + encodeURIComponent(f)
+          title: formatTitle(f),
+          url: bucketURL + "/" + encodeURIComponent(f),
+          type: "music"
         };
       });
     }
@@ -289,7 +307,53 @@
       return arr;
     }
 
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
     shuffle(tracks);
+
+    function updateNowPlaying(title, label) {
+      trackTitle.textContent = label + ": " + title;
+    }
+
+    function makeTrackObject(filename, type) {
+      return {
+        file: filename,
+        title: formatTitle(filename),
+        url: bucketURL + "/" + encodeURIComponent(filename),
+        type: type
+      };
+    }
+
+    function playTrackObject(trackObj, indexForMusic) {
+      currentTrackType = trackObj.type;
+
+      if (typeof indexForMusic === "number") {
+        currentIndex = indexForMusic;
+      }
+
+      if (trackObj.type === "music") {
+        updateNowPlaying(trackObj.title, "Now Playing");
+      } else if (trackObj.type === "news") {
+        updateNowPlaying(trackObj.title, "News Update");
+      } else if (trackObj.type === "weather") {
+        updateNowPlaying(trackObj.title, "Weather Update");
+      } else if (trackObj.type === "stationid") {
+        updateNowPlaying(trackObj.title, "Station ID");
+      } else if (trackObj.type === "emergency") {
+        updateNowPlaying(trackObj.title, "Emergency Alert");
+      }
+
+      player.src = trackObj.url;
+
+      player.play().then(function() {
+        tunedIn = true;
+      }).catch(function(e) {
+        console.log("Playback error:", e);
+        trackTitle.textContent = "Tap Listen Live to tune in";
+      });
+    }
 
     function startTrack(index) {
       if (index >= tracks.length) {
@@ -301,44 +365,92 @@
         index = tracks.length - 1;
       }
 
-      currentIndex = index;
-      var t = tracks[index];
-      trackTitle.textContent = "Now Playing: " + t.title;
-      player.src = t.url;
-
-      player.play().then(function() {
-        tunedIn = true;
-      }).catch(function(e) {
-        console.log("Playback error:", e);
-        trackTitle.textContent = "Tap Listen Live to tune in";
-      });
+      playTrackObject(tracks[index], index);
     }
 
     function startRadio() {
-      if (!tunedIn) {
-        startTrack(currentIndex);
+      if (tunedIn) return;
+
+      if (emergencyEnabled && !emergencyPlayedThisSession) {
+        emergencyPlayedThisSession = true;
+        playTrackObject(makeTrackObject(EMERGENCY_FILE, "emergency"));
+        return;
       }
+
+      startTrack(currentIndex);
     }
 
     function skipForward() {
       if (!tunedIn) {
-        startTrack(currentIndex);
+        startRadio();
         return;
       }
-      startTrack(currentIndex + 1);
+
+      if (currentTrackType === "music") {
+        startTrack(currentIndex + 1);
+      } else {
+        playNextItem();
+      }
     }
 
     function playPrev() {
       if (!tunedIn) {
-        startTrack(currentIndex);
+        startRadio();
         return;
       }
-      startTrack(currentIndex - 1);
+
+      if (currentTrackType === "music") {
+        startTrack(currentIndex - 1);
+      }
+    }
+
+    function queueNewsUpdate() {
+      insertQueue.push(makeTrackObject(NEWS_FILE, "news"));
+    }
+
+    function queueWeatherUpdate() {
+      insertQueue.push(makeTrackObject(WEATHER_FILE, "weather"));
+    }
+
+    function getRandomStationIdObject() {
+      return makeTrackObject(randomItem(stationIds), "stationid");
+    }
+
+    function checkTopOfHour() {
+      var now = new Date();
+      var hourKey = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() + "-" + now.getHours();
+
+      if (now.getMinutes() === 0 && hourKey !== lastTriggeredHour) {
+        pendingTopOfHourId = true;
+        lastTriggeredHour = hourKey;
+      }
+    }
+
+    setInterval(checkTopOfHour, 10000);
+    checkTopOfHour();
+
+    function playNextItem() {
+      if (pendingTopOfHourId) {
+        pendingTopOfHourId = false;
+        playTrackObject(getRandomStationIdObject());
+        return;
+      }
+
+      if (insertQueue.length > 0) {
+        var nextInsert = insertQueue.shift();
+        playTrackObject(nextInsert);
+        return;
+      }
+
+      startTrack(currentIndex + 1);
     }
 
     player.addEventListener("ended", function() {
-      startTrack(currentIndex + 1);
+      playNextItem();
     });
+
+    window.queueNewsUpdate = queueNewsUpdate;
+    window.queueWeatherUpdate = queueWeatherUpdate;
   </script>
 </body>
 </html>
