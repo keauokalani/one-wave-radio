@@ -175,10 +175,10 @@ button:hover {
   }
 
   .weather-hero-banner {
-    height: 250px;
-    background-size: cover;
-    background-position: center top;
-  }
+  height: 320px;
+  background-size: cover;
+  background-position: center;
+}
 
   .weather-top-nav a {
     display: inline-block;
