@@ -1,26 +1,100 @@
-body{
-font-family: Arial;
-background:#0c1b2a;
+body {
+
+margin:0;
+font-family: Arial, sans-serif;
 color:white;
-text-align:center;
+
+background-image: url("images/background.webp");
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+
 }
 
+
+.header{
+
+text-align:center;
+padding:40px;
+
+background: linear-gradient(
+rgba(0,0,0,0.6),
+rgba(0,0,0,0)
+);
+
+}
+
+
+.logo{
+
+width:200px;
+max-width:80%;
+margin-bottom:15px;
+
+}
+
+
 nav{
-margin:20px;
+
+text-align:center;
+margin-top:10px;
+
 }
 
 nav a{
+
 color:white;
-margin:10px;
 text-decoration:none;
+margin:0 15px;
 font-weight:bold;
+
 }
 
-button{
-padding:15px;
-font-size:18px;
-background:#0ea5e9;
+nav a:hover{
+
+color:#ffd27a;
+
+}
+
+
+.welcome{
+
+display:flex;
+justify-content:center;
+align-items:center;
+height:60vh;
+
+}
+
+
+.welcome-box{
+
+background: rgba(0,0,0,0.45);
+padding:40px;
+border-radius:12px;
+text-align:center;
+max-width:700px;
+
+}
+
+
+.listen-btn{
+
+margin-top:20px;
+padding:14px 28px;
+font-size:16px;
+
+background:#2ca6d9;
 border:none;
-color:white;
 border-radius:8px;
+color:white;
+
+cursor:pointer;
+
+}
+
+.listen-btn:hover{
+
+background:#1c8fb8;
+
 }
