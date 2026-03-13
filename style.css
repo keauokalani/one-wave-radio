@@ -72,24 +72,18 @@ button:hover {
   background: #1c8fb8;
 }
 
-/* WEATHER PAGE */
+/* WEATHER PAGE - FULL BACKGROUND IMAGE */
 
 .weather-page {
-  background: #0b1d33;
-}
-
-/* WEATHER HERO IMAGE */
-
-.weather-hero-banner {
-  height: 460px;
   background-image: url("kau-weather-bg.png");
-  background-size: cover;
-  background-position: center top;
+  background-size: 100% auto;
+  background-position: top center;
   background-repeat: no-repeat;
-  position: relative;
+  background-color: #0b1d33;
+  min-height: 100vh;
 }
 
-/* TOP NAV OVER HERO */
+/* WEATHER NAV OVER BACKGROUND */
 
 .weather-top-nav {
   text-align: center;
@@ -108,12 +102,10 @@ button:hover {
   color: #ffd27a;
 }
 
-/* MAIN CONTENT UNDER HERO */
+/* PUSH CONTENT BELOW THE TEXT IN THE IMAGE */
 
-.weather-main-clean {
-  padding: 40px 20px 60px;
-  background: #0b1d33;
-  margin-top: 0;
+.weather-main-full {
+  padding: 600px 20px 60px;
 }
 
 /* WEATHER GRID */
@@ -124,7 +116,6 @@ button:hover {
   justify-content: center;
   gap: 25px;
   padding: 0 20px 20px;
-  margin-top: 0;
 }
 
 .info-card {
@@ -179,19 +170,22 @@ button:hover {
 /* MOBILE */
 
 @media (max-width: 768px) {
-  body {
+  body,
+  .weather-page {
     background-attachment: scroll;
   }
 
-  .weather-hero-banner {
-    height: 300px;
-    background-size: cover;
-    background-position: center top;
+  .weather-page {
+    background-size: 100% auto;
   }
 
   .weather-top-nav a {
     display: inline-block;
     margin: 8px 10px;
+  }
+
+  .weather-main-full {
+    padding: 260px 15px 40px;
   }
 
   .info-card,
