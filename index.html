@@ -92,6 +92,49 @@
       transform:translateY(-2px);
     }
 
+    .live-indicator{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.38);
+      backdrop-filter:blur(5px);
+      text-shadow:0 2px 8px rgba(0,0,0,0.7);
+      font-size:14px;
+      font-weight:bold;
+      letter-spacing:0.5px;
+    }
+
+    .live-dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#ff3b3b;
+      box-shadow:0 0 0 rgba(255,59,59,0.8);
+      opacity:0.45;
+    }
+
+    .live-dot.active{
+      opacity:1;
+      animation:pulse 1.4s infinite;
+    }
+
+    @keyframes pulse{
+      0%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(255,59,59,0.75);
+      }
+      70%{
+        transform:scale(1.08);
+        box-shadow:0 0 0 14px rgba(255,59,59,0);
+      }
+      100%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(255,59,59,0);
+      }
+    }
+
     #trackTitle{
       margin:0;
       text-align:center;
@@ -163,6 +206,11 @@
     </nav>
 
     <div class="player-wrap">
+      <div class="live-indicator" id="liveIndicator">
+        <span class="live-dot" id="liveDot"></span>
+        <span id="liveText">OFF AIR</span>
+      </div>
+
       <div class="controls">
         <button id="prevBtn" onclick="playPrev()">&#9198; Prev</button>
         <button id="playBtn" onclick="togglePlay()">&#9654; Listen Live</button>
@@ -228,8 +276,21 @@
     var trackTitle = document.getElementById("trackTitle");
     var statusText = document.getElementById("statusText");
     var playBtn = document.getElementById("playBtn");
+    var liveDot = document.getElementById("liveDot");
+    var liveText = document.getElementById("liveText");
+
     var currentIndex = 0;
     var startedOnce = false;
+
+    function setLiveState(isLive){
+      if(isLive){
+        liveDot.classList.add("active");
+        liveText.textContent = "LIVE RADIO";
+      } else {
+        liveDot.classList.remove("active");
+        liveText.textContent = "OFF AIR";
+      }
+    }
 
     function buildTrackObjects(files) {
       return files.map(function(f) {
@@ -275,9 +336,11 @@
       player.play().then(function() {
         playBtn.innerHTML = "&#10074;&#10074; Pause";
         startedOnce = true;
+        setLiveState(true);
       }).catch(function(e) {
         console.log("Playback error:", e);
         statusText.textContent = "Tap Listen Live again if playback was blocked.";
+        setLiveState(false);
       });
     }
 
@@ -291,14 +354,17 @@
         player.play().then(function() {
           playBtn.innerHTML = "&#10074;&#10074; Pause";
           statusText.textContent = "Broadcasting 24/7";
+          setLiveState(true);
         }).catch(function(e) {
           console.log("Playback error:", e);
           statusText.textContent = "Playback blocked. Tap again.";
+          setLiveState(false);
         });
       } else {
         player.pause();
         playBtn.innerHTML = "&#9654; Listen Live";
         statusText.textContent = "Paused";
+        setLiveState(false);
       }
     }
 
@@ -312,6 +378,16 @@
 
     player.addEventListener("ended", function() {
       startTrack(currentIndex + 1);
+    });
+
+    player.addEventListener("pause", function() {
+      if (!player.ended) {
+        setLiveState(false);
+      }
+    });
+
+    player.addEventListener("play", function() {
+      setLiveState(true);
     });
   </script>
 </body>
