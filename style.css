@@ -1,250 +1,170 @@
 body {
-
-  margin:0;
+  margin: 0;
   font-family: Arial, sans-serif;
-  color:white;
-
+  color: white;
   background-image: url("one-wave-radio-website-bg.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-
 }
 
-.header{
-
-  text-align:center;
-  padding:40px;
-
+.header {
+  text-align: center;
+  padding: 20px 20px 10px;
   background: linear-gradient(
-      rgba(0,0,0,0.6),
-      rgba(0,0,0,0)
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0)
   );
-
 }
 
-nav{
-
-  text-align:center;
-  margin-top:10px;
-
+nav {
+  text-align: center;
+  margin-top: 10px;
 }
 
-nav a{
-
-  color:white;
-  text-decoration:none;
-  margin:0 15px;
-  font-weight:bold;
-
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
 }
 
-nav a:hover{
-
-  color:#ffd27a;
-
+nav a:hover {
+  color: #ffd27a;
 }
 
-.logo{
-
-  width:200px;
-  max-width:80%;
-  margin-bottom:15px;
-
+.logo {
+  width: 200px;
+  max-width: 80%;
+  margin-bottom: 15px;
 }
 
-.welcome{
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:60vh;
-  padding:20px;
-
+.welcome {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 20px;
 }
 
-.welcome-box{
-
-  background:rgba(0,0,0,0.45);
-  padding:40px;
-  border-radius:12px;
-  text-align:center;
-  max-width:700px;
-
+.welcome-box {
+  background: rgba(0,0,0,0.45);
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 700px;
 }
 
 .listen-btn,
-button{
-
-  margin-top:20px;
-  padding:14px 28px;
-  font-size:16px;
-  background:#2ca6d9;
-  border:none;
-  border-radius:8px;
-  color:white;
-  cursor:pointer;
-
+button {
+  margin-top: 20px;
+  padding: 14px 28px;
+  font-size: 16px;
+  background: #2ca6d9;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
 }
 
 .listen-btn:hover,
-button:hover{
-
-  background:#1c8fb8;
-
+button:hover {
+  background: #1c8fb8;
 }
 
 /* WEATHER PAGE BACKGROUND */
 
-.weather-page{
-
+.weather-page {
   background-image: url("kau-weather-bg.png");
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-attachment: fixed;
-
-}
-
-/* WEATHER HERO SECTION */
-
-.weather-hero{
-
-  text-align:center;
-  margin:40px auto;
-  max-width:900px;
-  background:rgba(0,0,0,0.5);
-  padding:30px;
-  border-radius:15px;
-
-}
-
-.weather-hero h2{
-
-  margin-top:0;
-  font-size:2.2em;
-
-}
-
-.weather-hero p{
-
-  font-size:1.1em;
-  line-height:1.6;
-
+  min-height: 100vh;
 }
 
 /* WEATHER GRID */
 
-.weather-grid{
-
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:25px;
-  padding:20px;
-
+.weather-main {
+  padding: 320px 20px 60px;
 }
 
-.info-card{
-
-  background:rgba(0,0,0,0.5);
-  padding:25px;
-  border-radius:15px;
-  width:300px;
-  max-width:90%;
-
+.weather-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  padding: 20px;
 }
 
-.info-card h3{
-
-  margin-top:0;
-  color:#ffd27a;
-
+.info-card {
+  background: rgba(0,0,0,0.5);
+  padding: 25px;
+  border-radius: 15px;
+  width: 300px;
+  max-width: 90%;
 }
 
-.placeholder-box{
+.info-card h3 {
+  margin-top: 0;
+  color: #ffd27a;
+}
 
-  margin-top:15px;
-  padding:15px;
-  background:rgba(255,255,255,0.08);
-  border-radius:10px;
-  line-height:1.5;
-
+.placeholder-box {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  line-height: 1.5;
 }
 
 /* GENERAL CONTENT BOX */
 
-.hero-box{
-
-  max-width:900px;
-  margin:0 auto 30px;
-  background:rgba(0,0,0,0.48);
-  border-radius:16px;
-  padding:30px 25px;
-  text-align:center;
-  box-sizing:border-box;
-
+.hero-box {
+  max-width: 900px;
+  margin: 0 auto 30px;
+  background: rgba(0,0,0,0.48);
+  border-radius: 16px;
+  padding: 30px 25px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.weather-note h3{
-
-  margin-top:0;
-  color:#ffd27a;
-  font-size:1.4rem;
-
+.weather-note h3 {
+  margin-top: 0;
+  color: #ffd27a;
+  font-size: 1.4rem;
 }
 
-.weather-note p{
-
-  font-size:1.08rem;
-  line-height:1.6;
-  margin-bottom:0;
-
-}
-
-/* MAIN WEATHER PAGE SPACING */
-
-.weather-main{
-
-  padding:30px 20px 60px;
-
+.weather-note p {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  margin-bottom: 0;
 }
 
 /* MOBILE */
 
-@media (max-width:768px){
-
-  .header{
-
-    padding:30px 20px;
-
+@media (max-width: 768px) {
+  body,
+  .weather-page {
+    background-attachment: scroll;
   }
 
-  .logo{
-
-    width:170px;
-
+  .header {
+    padding: 16px 20px 8px;
   }
 
-  nav a{
-
-    display:inline-block;
-    margin:8px 10px;
-
+  nav a {
+    display: inline-block;
+    margin: 8px 10px;
   }
 
   .welcome-box,
-  .weather-hero,
   .hero-box,
-  .info-card{
-
-    padding:24px 18px;
-
+  .info-card {
+    padding: 24px 18px;
   }
 
-  .weather-hero h2{
-
-    font-size:1.8em;
-
+  .weather-main {
+    padding: 220px 15px 40px;
   }
-
 }
