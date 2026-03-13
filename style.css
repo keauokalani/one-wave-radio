@@ -1,0 +1,26 @@
+body{
+font-family: Arial;
+background:#0c1b2a;
+color:white;
+text-align:center;
+}
+
+nav{
+margin:20px;
+}
+
+nav a{
+color:white;
+margin:10px;
+text-decoration:none;
+font-weight:bold;
+}
+
+button{
+padding:15px;
+font-size:18px;
+background:#0ea5e9;
+border:none;
+color:white;
+border-radius:8px;
+}
