@@ -75,11 +75,13 @@ button:hover {
 /* WEATHER PAGE BACKGROUND */
 
 .weather-page {
+
   background-image: url("kau-weather-bg.png");
-  background-size: 100% auto;
+  background-size: 100% 420px;
   background-position: top center;
   background-repeat: no-repeat;
   background-color: #0b1d33;
+
 }
 
 /* WEATHER GRID */
