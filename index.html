@@ -1,23 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>One Wave Radio</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+color:white;
+text-align:center;
+background:url("background.jpg") no-repeat center center fixed;
+background-size:cover;
+}
+
+.overlay{
+background:rgba(0,0,0,0.35);
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+.logo{
+width:200px;
+margin-bottom:15px;
+}
+
+h1{
+margin:10px 0 5px 0;
+font-size:48px;
+letter-spacing:2px;
+}
+
+.tagline{
+font-size:22px;
+margin-bottom:30px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+margin:0 15px;
+font-size:18px;
+font-weight:bold;
+padding:10px 15px;
+border-radius:6px;
+background:rgba(0,0,0,0.45);
+}
+
+nav a:hover{
+background:#0ea5e9;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<header class="header"><p>24/7 Island Music and Kaʻū News</p>
+<div class="overlay">
 
-</header>
+<h1>ONE WAVE RADIO</h1>
 
+<div class="tagline">
+24/7 Original Music by De Oliveira
+</div>
 
 <nav>
 
-<a href="index.html">Home</a>
 <a href="listen.html">Listen Live</a>
 <a href="news.html">News</a>
 <a href="weather.html">Weather</a>
@@ -25,5 +83,8 @@
 
 </nav>
 
+</div>
+
 </body>
+
 </html>
