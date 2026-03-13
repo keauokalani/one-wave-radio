@@ -1,200 +1,87 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: white;
-  background-image: url("one-wave-radio-website-bg.png");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-
-.header {
-  text-align: center;
-  padding: 40px;
-  background: linear-gradient(
-    rgba(0,0,0,0.6),
-    rgba(0,0,0,0)
-  );
-}
-
-nav {
-  text-align: center;
-  margin-top: 10px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 15px;
-  font-weight: bold;
-}
-
-nav a:hover {
-  color: #ffd27a;
-}
-
-.logo {
-  width: 200px;
-  max-width: 80%;
-  margin-bottom: 15px;
-}
-
-.welcome {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  padding: 20px;
-}
-
-.welcome-box {
-  background: rgba(0,0,0,0.45);
-  padding: 40px;
-  border-radius: 12px;
-  text-align: center;
-  max-width: 700px;
-}
-
-.listen-btn,
-button {
-  margin-top: 20px;
-  padding: 14px 28px;
-  font-size: 16px;
-  background: #2ca6d9;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-}
-
-.listen-btn:hover,
-button:hover {
-  background: #1c8fb8;
-}
-
-/* WEATHER PAGE - FULL BACKGROUND IMAGE */
+/* WEATHER PAGE */
 
 .weather-page {
-  background-image: url("kau-weather-bg.png");
-  background-size: 100% auto;
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-color: #0b1d33;
-  min-height: 100vh;
+  margin:0;
+  background:#0b1d33;
+  color:white;
+  font-family: Arial, sans-serif;
 }
 
-/* WEATHER NAV OVER BACKGROUND */
+/* HERO IMAGE */
 
-.weather-top-nav {
-  text-align: center;
-  padding-top: 24px;
+.weather-hero {
+  width:100%;
+  height:420px;
+  background-image:url("kau-weather-bg.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
 }
 
-.weather-top-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 15px;
-  font-weight: bold;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+/* NAV */
+
+.weather-top-nav{
+  text-align:center;
+  padding-top:20px;
 }
 
-.weather-top-nav a:hover {
-  color: #ffd27a;
+.weather-top-nav a{
+  color:white;
+  text-decoration:none;
+  margin:0 15px;
+  font-weight:bold;
 }
 
-/* PUSH CONTENT BELOW THE TEXT IN THE IMAGE */
-
-.weather-main-full {
-  padding: 600px 20px 60px;
+.weather-top-nav a:hover{
+  color:#ffd27a;
 }
 
-/* WEATHER GRID */
+/* CONTENT SECTION */
 
-.weather-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
-  padding: 0 20px 20px;
+.weather-main{
+  background:#0b1d33;
+  padding:40px 20px 60px;
 }
 
-.info-card {
-  background: rgba(0,0,0,0.55);
-  padding: 25px;
-  border-radius: 15px;
-  width: 300px;
-  max-width: 90%;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+/* GRID */
+
+.weather-grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:25px;
+  max-width:1100px;
+  margin:auto;
 }
 
-.info-card h3 {
-  margin-top: 0;
-  color: #ffd27a;
+/* CARDS */
+
+.info-card{
+  background:rgba(0,0,0,0.55);
+  padding:25px;
+  border-radius:14px;
+  width:300px;
 }
 
-.info-card p {
-  line-height: 1.4;
+.info-card h3{
+  margin-top:0;
+  color:#ffd27a;
 }
 
-.placeholder-box {
-  margin-top: 15px;
-  padding: 15px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 10px;
-  line-height: 1.5;
+.placeholder-box{
+  margin-top:15px;
+  padding:15px;
+  background:rgba(255,255,255,0.08);
+  border-radius:10px;
 }
 
-.hero-box {
-  max-width: 900px;
-  margin: 20px auto 30px;
-  background: rgba(0,0,0,0.48);
-  border-radius: 16px;
-  padding: 30px 25px;
-  text-align: center;
-  box-sizing: border-box;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-}
+/* WEATHER UPDATE BOX */
 
-.weather-note h3 {
-  margin-top: 0;
-  color: #ffd27a;
-  font-size: 1.4rem;
-}
-
-.weather-note p {
-  font-size: 1.08rem;
-  line-height: 1.6;
-  margin-bottom: 0;
-}
-
-/* MOBILE */
-
-@media (max-width: 768px) {
-  body,
-  .weather-page {
-    background-attachment: scroll;
-  }
-
-  .weather-page {
-    background-size: 100% auto;
-  }
-
-  .weather-top-nav a {
-    display: inline-block;
-    margin: 8px 10px;
-  }
-
-  .weather-main-full {
-    padding: 260px 15px 40px;
-  }
-
-  .info-card,
-  .hero-box,
-  .welcome-box {
-    padding: 24px 18px;
-  }
-
-  .weather-grid {
-    padding: 0 15px 20px;
-  }
+.weather-note{
+  max-width:900px;
+  margin:40px auto 0;
+  background:rgba(0,0,0,0.45);
+  padding:30px;
+  border-radius:14px;
+  text-align:center;
 }
