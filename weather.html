@@ -1,31 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Weather | One Wave Radio</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kaʻū Weather | One Wave Radio</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body class="weather-page">
 
-<body>
+  <header class="header">
+    <img src="images/logo.png" class="logo" alt="One Wave Radio Logo">
 
-<header>
-<h1>Kaʻū Weather</h1>
-</header>
+    <h1>ONE WAVE RADIO</h1>
+    <p>24/7 Original Music by De Oliveira</p>
 
-<nav>
-<a href="index.html">Home</a>
-<a href="listen.html">Listen Live</a>
-<a href="news.html">News</a>
-<a href="weather.html">Weather</a>
-<a href="about.html">About</a>
-</nav>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-<section>
+  <main class="weather-main">
 
-<h2>Weather Updates</h2>
+    <section class="hero-box weather-hero">
+      <h2>Kaʻū Weather</h2>
+      <p>
+        Local forecasts, Punaluʻu tides, and Kalae (South Point)
+        ocean conditions for the Kaʻū district of Hawaiʻi Island.
+      </p>
+    </section>
 
-<p>Weather reports and air quality updates for Kaʻū will appear here.</p>
+    <section class="weather-grid">
 
-</section>
+      <div class="info-card">
+        <h3>Kaʻū Forecast</h3>
+        <p>
+          Current weather, temperature, wind, rain outlook, and general
+          district conditions for Kaʻū.
+        </p>
+        <div class="placeholder-box">
+          Add forecast text, weather widget, or daily update here.
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Punaluʻu Tides</h3>
+        <p>
+          High tide, low tide, and daily tide timing for Punaluʻu
+          and nearby shoreline areas.
+        </p>
+        <div class="placeholder-box">
+          Add tide schedule, tide widget, or manually updated tide info here.
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Kalae (South Point) Conditions</h3>
+        <p>
+          Wind, ocean conditions, shoreline outlook, and local marine
+          conditions for Kalae / South Point.
+        </p>
+        <div class="placeholder-box">
+          Add South Point wind, surf, or marine conditions here.
+        </div>
+      </div>
+
+    </section>
+
+    <section class="hero-box weather-note">
+      <h3>Weather Updates</h3>
+      <p>
+        This page can be updated manually or connected to your future automated
+        weather workflow for One Wave Radio.
+      </p>
+    </section>
+
+  </main>
 
 </body>
 </html>
