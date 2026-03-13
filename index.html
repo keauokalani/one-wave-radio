@@ -1,458 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>One Wave Radio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Wave Radio</title>
 
-  <style>
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:url("background.png") no-repeat center top fixed;
-      background-size:cover;
-      min-height:100vh;
-      overflow:hidden;
-      color:white;
-    }
+<style>
 
-    .overlay{
-      position:relative;
-      min-height:100vh;
-      width:100%;
-    }
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:url("background.png") no-repeat center top fixed;
+background-size:cover;
+min-height:100vh;
+overflow:hidden;
+color:white;
+}
 
-    nav{
-      position:absolute;
-      top:52%;
-      left:50%;
-      transform:translateX(-50%);
-      display:flex;
-      gap:18px;
-      justify-content:center;
-      align-items:center;
-      flex-wrap:nowrap;
-      z-index:3;
-    }
+.overlay{
+position:relative;
+min-height:100vh;
+width:100%;
+}
 
-    nav a{
-      color:white;
-      text-decoration:none;
-      font-size:18px;
-      font-weight:bold;
-      padding:10px 18px;
-      border-radius:6px;
-      background:rgba(0,0,0,0.45);
-      backdrop-filter:blur(6px);
-      transition:all .25s ease;
-      white-space:nowrap;
-    }
+nav{
+position:absolute;
+top:52%;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+gap:18px;
+z-index:3;
+}
 
-    nav a:hover{
-      background:#0ea5e9;
-      transform:translateY(-2px);
-    }
+nav a{
+color:white;
+text-decoration:none;
+font-size:18px;
+font-weight:bold;
+padding:10px 18px;
+border-radius:6px;
+background:rgba(0,0,0,0.45);
+backdrop-filter:blur(6px);
+}
 
-    .player-wrap{
-      position:absolute;
-      top:62%;
-      left:50%;
-      transform:translateX(-50%);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:12px;
-      z-index:3;
-      width:min(92vw, 760px);
-    }
+nav a:hover{
+background:#0ea5e9;
+}
 
-    .live-indicator{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 14px;
-      border-radius:999px;
-      background:rgba(0,0,0,0.38);
-      backdrop-filter:blur(5px);
-      text-shadow:0 2px 8px rgba(0,0,0,0.7);
-      font-size:14px;
-      font-weight:bold;
-      letter-spacing:0.5px;
-    }
+.player-wrap{
+position:absolute;
+top:62%;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+z-index:3;
+width:min(92vw,760px);
+}
 
-    .live-dot{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      background:#ff3b3b;
-      animation:pulse 1.4s infinite;
-    }
+.controls{
+display:flex;
+gap:12px;
+}
 
-    @keyframes pulse{
-      0%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(255,59,59,0.75);
-      }
-      70%{
-        transform:scale(1.08);
-        box-shadow:0 0 0 14px rgba(255,59,59,0);
-      }
-      100%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(255,59,59,0);
-      }
-    }
+.controls button{
+background:rgba(0,0,0,0.5);
+color:#fff;
+border:none;
+padding:10px 18px;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
 
-    .controls{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+.controls button:hover{
+background:#0ea5e9;
+}
 
-    .controls button{
-      background:rgba(0,0,0,0.5);
-      color:#fff;
-      border:none;
-      padding:10px 18px;
-      border-radius:8px;
-      font-size:16px;
-      font-family:Arial, Helvetica, sans-serif;
-      cursor:pointer;
-      backdrop-filter:blur(6px);
-      transition:all .25s ease;
-    }
+#trackTitle{
+font-size:18px;
+font-weight:bold;
+background:rgba(0,0,0,0.35);
+padding:8px 14px;
+border-radius:8px;
+}
 
-    .controls button:hover{
-      background:#0ea5e9;
-      transform:translateY(-2px);
-    }
+audio{
+display:none;
+}
 
-    #trackTitle{
-      margin:0;
-      text-align:center;
-      font-size:18px;
-      font-weight:bold;
-      text-shadow:0 2px 8px rgba(0,0,0,0.7);
-      background:rgba(0,0,0,0.35);
-      padding:8px 14px;
-      border-radius:8px;
-      backdrop-filter:blur(4px);
-      max-width:100%;
-    }
-
-    #statusText{
-      margin:0;
-      font-size:15px;
-      text-shadow:0 2px 8px rgba(0,0,0,0.7);
-      background:rgba(0,0,0,0.35);
-      padding:6px 12px;
-      border-radius:8px;
-      backdrop-filter:blur(4px);
-    }
-
-    audio{
-      display:none;
-    }
-
-    @media (max-width: 768px){
-      nav{
-        top:50%;
-        gap:10px;
-        flex-wrap:wrap;
-        width:90%;
-      }
-
-      nav a{
-        font-size:16px;
-        padding:8px 14px;
-      }
-
-      .player-wrap{
-        top:64%;
-        width:94vw;
-      }
-
-      .controls button{
-        font-size:15px;
-        padding:9px 14px;
-      }
-
-      #trackTitle{
-        font-size:16px;
-      }
-    }
-  </style>
+</style>
 </head>
 
 <body>
-  <div class="overlay">
 
-    <nav>
-      <a href="news.html">News</a>
-      <a href="weather.html">Weather</a>
-      <a href="about.html">About</a>
-    </nav>
+<div class="overlay">
 
-    <div class="player-wrap">
-      <div class="live-indicator">
-        <span class="live-dot"></span>
-        <span>LIVE BROADCAST</span>
-      </div>
+<nav>
+<a href="news.html">News</a>
+<a href="weather.html">Weather</a>
+<a href="about.html">About</a>
+</nav>
 
-      <div class="controls">
-        <button onclick="playPrev()">&#9198; Prev</button>
-        <button id="listenBtn" onclick="startRadio()">&#9654; Listen Live</button>
-        <button onclick="skipForward()">Next &#9197;</button>
-      </div>
+<div class="player-wrap">
 
-      <p id="trackTitle">Tap Listen Live to tune in</p>
-      <p id="statusText">Streaming 24/7 Worldwide</p>
-    </div>
+<div class="controls">
+<button onclick="playPrev()">Prev</button>
+<button onclick="startRadio()">Listen Live</button>
+<button onclick="skipForward()">Next</button>
+</div>
 
-  </div>
+<p id="trackTitle">Tap Listen Live to tune in</p>
 
-  <audio id="player" crossorigin="anonymous"></audio>
+</div>
+</div>
 
-  <script>
-    var bucketURL = "https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
+<audio id="player"></audio>
 
-    var playlist = [
-      "2000_futuristic_brandy.mp3",
-      "90s_classic_brandy.mp3",
-      "Country_Living.mp3",
-      "Healing_Me.mp3",
-      "Island_Bounce.mp3",
-      "Island_Soul_Sunset_V2.mp3",
-      "Island_soul_heavybass.mp3",
-      "Island_soul_onedrop.mp3",
-      "Island_sunset_instrumental.mp3",
-      "Kaucoffee_islandreggae.mp3",
-      "Minimaldrill_trap.mp3",
-      "Mother_of_light.mp3",
-      "Nvr_say_goodbye_brandy.mp3",
-      "Slowjamballad_brandy.mp3",
-      "Softly_loving_you.mp3",
-      "Softly_loving_you_main.mp3",
-      "Softlylovingyou_megan_version.mp3",
-      "Spacetrap_futuristic.mp3",
-      "UK_Lovers_Reggae.mp3",
-      "bell_noir.mp3",
-      "darklane_latenight_drake.mp3",
-      "dubtouch_reggae.mp3",
-      "emotionalspace_piano_drake.mp3",
-      "industrial_street.mp3",
-      "island_horizon.mp3",
-      "islandroots_reflections.mp3",
-      "kaucoffee_islandcountry.mp3",
-      "latenight_luxury_trap.mp3",
-      "luxury_glossy_trap.mp3",
-      "midnightdrift_drake.mp3",
-      "quiet_reflection.mp3",
-      "rnb_midtempo_brandy.mp3",
-      "version_four_drake.mp3",
-      "version_three_drake.mp3",
-      "version_two_drake.mp3"
-    ];
+<script>
 
-    var stationIds = [
-      "OWR_MainStation_ID.mp3",
-      "OneWaveRadio_Station_ID2.mp3",
-      "OneWaveRadio_Station_ID3.mp3",
-      "OneWaveRadio_Station_ID4.mp3"
-    ];
+var bucketURL="https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
 
-    var NEWS_FILE = "Kau_News_update.mp3";
-    var WEATHER_FILE = "Kau_Weather_update.mp3";
-    var EMERGENCY_FILE = "Emergency_Alert.mp3";
+var NEWS_FILE="Kau_News_update.mp3";
 
-    var emergencyEnabled = true;
+var playlist=[
 
-    var player = document.getElementById("player");
-    var trackTitle = document.getElementById("trackTitle");
-    var currentIndex = 0;
-    var tunedIn = false;
+"2000_futuristic_brandy.mp3",
+"90s_classic_brandy.mp3",
+"Country_Living.mp3",
+"Healing_Me.mp3",
+"Island_Bounce.mp3",
+"Island_Soul_Sunset_V2.mp3",
+"Island_soul_heavybass.mp3",
+"Island_soul_onedrop.mp3",
+"Island_sunset_instrumental.mp3",
+"Kaucoffee_islandreggae.mp3",
+"Minimaldrill_trap.mp3",
+"Mother_of_light.mp3",
+"Nvr_say_goodbye_brandy.mp3",
+"Slowjamballad_brandy.mp3",
+"Softly_loving_you.mp3",
+"Softly_loving_you_main.mp3",
+"Softlylovingyou_megan_version.mp3",
+"Spacetrap_futuristic.mp3",
+"UK_Lovers_Reggae.mp3",
+"bell_noir.mp3",
+"darklane_latenight_drake.mp3",
+"dubtouch_reggae.mp3",
+"emotionalspace_piano_drake.mp3",
+"industrial_street.mp3",
+"island_horizon.mp3",
+"islandroots_reflections.mp3",
+"kaucoffee_islandcountry.mp3",
+"latenight_luxury_trap.mp3",
+"luxury_glossy_trap.mp3",
+"midnightdrift_drake.mp3",
+"quiet_reflection.mp3",
+"rnb_midtempo_brandy.mp3",
+"version_four_drake.mp3",
+"version_three_drake.mp3",
+"version_two_drake.mp3"
 
-    var insertQueue = [];
-    var currentTrackType = "music";
-    var pendingTopOfHourId = false;
-    var lastTriggeredHour = null;
-    var emergencyPlayedThisSession = false;
+];
 
-    function formatTitle(filename) {
-      return filename.replace(/_/g, " ").replace(/\.mp3$/i, "");
-    }
+var player=document.getElementById("player");
+var trackTitle=document.getElementById("trackTitle");
 
-    function buildTrackObjects(files) {
-      return files.map(function(f) {
-        return {
-          file: f,
-          title: formatTitle(f),
-          url: bucketURL + "/" + encodeURIComponent(f),
-          type: "music"
-        };
-      });
-    }
+var tracks=[];
+var currentIndex=0;
+var tunedIn=false;
 
-    var tracks = buildTrackObjects(playlist);
+function formatTitle(file){
+return file.replace(/_/g," ").replace(".mp3","");
+}
 
-    function shuffle(arr) {
-      for (var i = arr.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-      }
-      return arr;
-    }
+function buildTracks(){
 
-    function randomItem(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+tracks=playlist.map(function(file){
 
-    shuffle(tracks);
+return{
 
-    function updateNowPlaying(title, label) {
-      trackTitle.textContent = label + ": " + title;
-    }
+file:file,
+title:formatTitle(file),
+url:bucketURL+"/"+encodeURIComponent(file)
 
-    function makeTrackObject(filename, type) {
-      return {
-        file: filename,
-        title: formatTitle(filename),
-        url: bucketURL + "/" + encodeURIComponent(filename),
-        type: type
-      };
-    }
+};
 
-    function playTrackObject(trackObj, indexForMusic) {
-      currentTrackType = trackObj.type;
-
-      if (typeof indexForMusic === "number") {
-        currentIndex = indexForMusic;
-      }
-
-      if (trackObj.type === "music") {
-        updateNowPlaying(trackObj.title, "Now Playing");
-      } else if (trackObj.type === "news") {
-        updateNowPlaying(trackObj.title, "News Update");
-      } else if (trackObj.type === "weather") {
-        updateNowPlaying(trackObj.title, "Weather Update");
-      } else if (trackObj.type === "stationid") {
-        updateNowPlaying(trackObj.title, "Station ID");
-      } else if (trackObj.type === "emergency") {
-        updateNowPlaying(trackObj.title, "Emergency Alert");
-      }
-
-      player.src = trackObj.url;
-
-      player.play().then(function() {
-        tunedIn = true;
-      }).catch(function(e) {
-        console.log("Playback error:", e);
-        trackTitle.textContent = "Tap Listen Live to tune in";
-      });
-    }
-
-    function startTrack(index) {
-      if (index >= tracks.length) {
-        shuffle(tracks);
-        index = 0;
-      }
-
-      if (index < 0) {
-        index = tracks.length - 1;
-      }
-
-      playTrackObject(tracks[index], index);
-    }
-
-    function startRadio() {
-
-  if (tunedIn) return;
-
-  tunedIn = true;
-
-  // play news first
-  playTrackObject(makeTrackObject(NEWS_FILE, "news"));
+});
 
 }
 
-      startTrack(currentIndex);
-    }
+function shuffle(array){
 
-    function skipForward() {
-      if (!tunedIn) {
-        startRadio();
-        return;
-      }
+for(let i=array.length-1;i>0;i--){
 
-      if (currentTrackType === "music") {
-        startTrack(currentIndex + 1);
-      } else {
-        playNextItem();
-      }
-    }
+let j=Math.floor(Math.random()*(i+1));
+[array[i],array[j]]=[array[j],array[i]];
 
-    function playPrev() {
-      if (!tunedIn) {
-        startRadio();
-        return;
-      }
+}
 
-      if (currentTrackType === "music") {
-        startTrack(currentIndex - 1);
-      }
-    }
+}
 
-    function queueNewsUpdate() {
-      insertQueue.push(makeTrackObject(NEWS_FILE, "news"));
-    }
+buildTracks();
+shuffle(tracks);
 
-    function queueWeatherUpdate() {
-      insertQueue.push(makeTrackObject(WEATHER_FILE, "weather"));
-    }
+function playTrack(track,index){
 
-    function getRandomStationIdObject() {
-      return makeTrackObject(randomItem(stationIds), "stationid");
-    }
+if(index!==undefined) currentIndex=index;
 
-    function checkTopOfHour() {
-      var now = new Date();
-      var hourKey = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() + "-" + now.getHours();
+player.src=track.url;
 
-      if (now.getMinutes() === 0 && hourKey !== lastTriggeredHour) {
-        pendingTopOfHourId = true;
-        lastTriggeredHour = hourKey;
-      }
-    }
+trackTitle.textContent="Now Playing: "+track.title;
 
-    setInterval(checkTopOfHour, 10000);
-    checkTopOfHour();
+player.play().then(function(){
 
-    function playNextItem() {
-      if (pendingTopOfHourId) {
-        pendingTopOfHourId = false;
-        playTrackObject(getRandomStationIdObject());
-        return;
-      }
+tunedIn=true;
 
-      if (insertQueue.length > 0) {
-        var nextInsert = insertQueue.shift();
-        playTrackObject(nextInsert);
-        return;
-      }
+}).catch(function(){
 
-      startTrack(currentIndex + 1);
-    }
+trackTitle.textContent="Tap Listen Live to tune in";
 
-    player.addEventListener("ended", function() {
-      playNextItem();
-    });
+});
 
-    window.queueNewsUpdate = queueNewsUpdate;
-    window.queueWeatherUpdate = queueWeatherUpdate;
-  </script>
+}
+
+function startRadio(){
+
+if(tunedIn) return;
+
+var newsURL=bucketURL+"/"+encodeURIComponent(NEWS_FILE);
+
+player.src=newsURL;
+
+trackTitle.textContent="News Update";
+
+player.play().then(function(){
+
+tunedIn=true;
+
+}).catch(function(){
+
+trackTitle.textContent="Tap Listen Live to tune in";
+
+});
+
+}
+
+function startTrack(index){
+
+if(index>=tracks.length){
+
+shuffle(tracks);
+index=0;
+
+}
+
+if(index<0){
+
+index=tracks.length-1;
+
+}
+
+playTrack(tracks[index],index);
+
+}
+
+function skipForward(){
+
+if(!tunedIn){
+
+startRadio();
+return;
+
+}
+
+startTrack(currentIndex+1);
+
+}
+
+function playPrev(){
+
+if(!tunedIn){
+
+startRadio();
+return;
+
+}
+
+startTrack(currentIndex-1);
+
+}
+
+player.addEventListener("ended",function(){
+
+if(player.src.includes(NEWS_FILE)){
+
+startTrack(currentIndex);
+return;
+
+}
+
+startTrack(currentIndex+1);
+
+});
+
+</script>
+
 </body>
 </html>
