@@ -6,6 +6,8 @@ body{
 
 .weather-page{
   background:transparent;
+    background-size:100% auto !important;
+    background-position:center top !important;
 }
 
 .weather-hero-wrap{
@@ -42,6 +44,8 @@ body{
 .weather-content{
   padding:40px 20px 60px;
   background:transparent;
+    background-size:100% auto !important;
+    background-position:center top !important;
 }
 
 .weather-grid{
