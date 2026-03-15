@@ -5,7 +5,7 @@ body{
 }
 
 .weather-page{
-  background:#0b1d33;
+  background:transparent;
 }
 
 .weather-hero-wrap{
@@ -41,7 +41,7 @@ body{
 
 .weather-content{
   padding:40px 20px 60px;
-  background:#0b1d33;
+  background:transparent;
 }
 
 .weather-grid{
@@ -54,7 +54,7 @@ body{
 }
 
 .info-card{
-  background:rgba(0,0,0,0.55);
+  background:transparent;
   padding:25px;
   border-radius:14px;
   width:300px;
@@ -74,7 +74,7 @@ body{
 .placeholder-box{
   margin-top:15px;
   padding:15px;
-  background:rgba(255,255,255,0.08);
+  background:transparent;
   border-radius:10px;
   line-height:1.5;
 }
@@ -82,7 +82,7 @@ body{
 .weather-updates{
   max-width:900px;
   margin:40px auto 0;
-  background:rgba(0,0,0,0.45);
+  background:transparent;
   padding:30px;
   border-radius:14px;
   text-align:center;
