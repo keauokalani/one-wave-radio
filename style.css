@@ -41,7 +41,7 @@ body{
 
 .weather-content{
   padding:40px 20px 60px;
-  background:rgba(128, 128, 128, 0.4);
+  background:transparent;
 }
 
 .weather-grid{
