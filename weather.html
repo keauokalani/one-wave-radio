@@ -1,124 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kaʻū Weather | One Wave Radio</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* Adjust the hero image to be responsive and smaller */
-    .weather-hero-wrap {
-      text-align: center;
-      position: relative;
-    }
-    .weather-hero-image {
-      width: 100%;
-      max-width: 800px; /* Set a max width for better fit */
-      height: auto;
-      display: block;
-      margin: 0 auto;
-    }
-    /* Scale down title and subtitle text */
-    .weather-hero-wrap h1 {
-      font-size: 2.5em;
-      margin-top: 20px;
-    }
-    .weather-hero-wrap p {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-    /* Keep the grid layout as is but adjust text inside */
-    .info-card h3 {
-      font-size: 1.5em;
-    }
-    .info-card p {
-      font-size: 1em;
-    }
-    /* Add spacing and align the grid */
-    .weather-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .weather-content {
-      padding: 20px;
-    }
-    .placeholder-box {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 8px;
-      color: #fff;
-    }
-    .weather-updates h3 {
-      margin-top: 40px;
-      font-size: 1.8em;
-    }
-    .weather-updates p {
-      font-size: 1em;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ka‘U Weather | One Wave Radio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Full-page background image */
+        body.weather-page {
+            background: url('kau-weather-bg.png?v=3') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Keep the grid layout as is but adjust text inside */
+        .info-card h3 {
+            font-size: 1.5em;
+        }
+        .info-card p {
+            font-size: 1em;
+        }
+
+        /* Weather grid */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .weather-content {
+            padding: 20px;
+        }
+
+        .placeholder-box {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .info-card {
+            background-color: rgba(0, 0, 0, 0.45);
+            padding: 20px;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        /* Weather updates */
+        .weather-updates {
+            margin-top: 30px;
+            background-color: rgba(0, 0, 0, 0.45);
+            padding: 20px;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .weather-updates h3 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+        .weather-updates p {
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        /* Navigation */
+        .weather-nav {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .weather-nav a {
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Local forecast heading */
+        .local-forecast-heading {
+            text-align: center;
+            font-size: 2.5em;
+            color: #fff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+    </style>
 </head>
 <body class="weather-page">
 
-  <div class="weather-hero-wrap">
-    <img src="kau-weather-bg.png?v=3" alt="Kaʻū Weather" class="weather-hero-image">
-    <h1>Kaʻū Weather</h1>
-    <p>Local forecasts, Punaluʻu tides, and Kalae (South Point) conditions</p>
-
     <nav class="weather-nav">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
     </nav>
-  </div>
 
-  <main class="weather-content">
+    <main class="weather-content">
 
-    <div class="weather-grid">
+        <h2 class="local-forecast-heading">Local Forecast</h2>
 
-      <div class="info-card">
-        <h3>Kaʻū Forecast</h3>
-        <p>
-          Current weather, temperature, wind, rain outlook, and general district conditions for Kaʻū.
-        </p>
-        <div class="placeholder-box">
-          Add forecast text, weather widget, or daily update here.
+        <div class="weather-grid">
+
+            <div class="info-card">
+                <h3>Ka&#699;u Forecast</h3>
+                <p>
+                    Current weather, temperature, wind, rain outlook, and general district conditions for Ka&#699;u.
+                </p>
+                <div class="placeholder-box">
+                    Add forecast text, weather widget, or daily update here.
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Punalu&#699;u Tides</h3>
+                <p>
+                    High tide, low tide, and daily tide timing for Punalu&#699;u and nearby shoreline areas.
+                </p>
+                <div class="placeholder-box">
+                    Add tide schedule, tide widget, or manually updated tide info here.
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Kalae (South Point) Conditions</h3>
+                <p>
+                    Wind, ocean conditions, shoreline outlook, and local marine conditions for Kalae / South Point.
+                </p>
+                <div class="placeholder-box">
+                    Add South Point wind, surf, or marine conditions here.
+                </div>
+            </div>
+
         </div>
-      </div>
 
-      <div class="info-card">
-        <h3>Punaluʻu Tides</h3>
-        <p>
-          High tide, low tide, and daily tide timing for Punaluʻu and nearby shoreline areas.
-        </p>
-        <div class="placeholder-box">
-          Add tide schedule, tide widget, or manually updated tide info here.
+        <div class="weather-updates">
+            <h3>Weather Updates</h3>
+            <p>
+                This page can be updated manually or connected to your future automated weather workflow for One Wave Radio.
+            </p>
         </div>
-      </div>
 
-      <div class="info-card">
-        <h3>Kalae (South Point) Conditions</h3>
-        <p>
-          Wind, ocean conditions, shoreline outlook, and local marine conditions for Kalae / South Point.
-        </p>
-        <div class="placeholder-box">
-          Add South Point wind, surf, or marine conditions here.
-        </div>
-      </div>
-
-    </div>
-
-    <div class="weather-updates">
-      <h3>Weather Updates</h3>
-      <p>
-        This page can be updated manually or connected to your future automated weather workflow for One Wave Radio.
-      </p>
-    </div>
-
-  </main>
+    </main>
 
 </body>
 </html>
