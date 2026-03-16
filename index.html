@@ -6,7 +6,6 @@
 <title>One Wave Radio</title>
 
 <style>
-
 body{
 margin:0;
 font-family:Arial, Helvetica, sans-serif;
@@ -91,7 +90,6 @@ border-radius:8px;
 audio{
 display:none;
 }
-
 </style>
 </head>
 
@@ -121,13 +119,9 @@ display:none;
 <audio id="player"></audio>
 
 <script>
-
 var bucketURL="https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
 
-var NEWS_FILE="Kau_News_update.mp3";
-
 var playlist=[
-
 "2000_futuristic_brandy.mp3",
 "90s_classic_brandy.mp3",
 "Country_Living.mp3",
@@ -163,7 +157,6 @@ var playlist=[
 "version_four_drake.mp3",
 "version_three_drake.mp3",
 "version_two_drake.mp3"
-
 ];
 
 var player=document.getElementById("player");
@@ -178,135 +171,75 @@ return file.replace(/_/g," ").replace(".mp3","");
 }
 
 function buildTracks(){
-
 tracks=playlist.map(function(file){
-
 return{
-
 file:file,
 title:formatTitle(file),
 url:bucketURL+"/"+encodeURIComponent(file)
-
 };
-
 });
-
 }
 
 function shuffle(array){
-
 for(let i=array.length-1;i>0;i--){
-
 let j=Math.floor(Math.random()*(i+1));
 [array[i],array[j]]=[array[j],array[i]];
-
 }
-
 }
 
 buildTracks();
 shuffle(tracks);
 
 function playTrack(track,index){
-
 if(index!==undefined) currentIndex=index;
 
 player.src=track.url;
-
 trackTitle.textContent="Now Playing: "+track.title;
 
 player.play().then(function(){
-
 tunedIn=true;
-
 }).catch(function(){
-
 trackTitle.textContent="Tap Listen Live to tune in";
-
 });
-
-}
-
-function startRadio(){
-
-if(tunedIn) return;
-
-var newsURL=bucketURL+"/"+encodeURIComponent(NEWS_FILE);
-
-player.src=newsURL;
-
-trackTitle.textContent="News Update";
-
-player.play().then(function(){
-
-tunedIn=false;
-
-}).catch(function(){
-
-trackTitle.textContent="Tap Listen Live to tune in";
-
-});
-
 }
 
 function startTrack(index){
-
 if(index>=tracks.length){
-
 shuffle(tracks);
 index=0;
-
 }
 
 if(index<0){
-
 index=tracks.length-1;
-
 }
 
 playTrack(tracks[index],index);
+}
 
+function startRadio(){
+if(tunedIn) return;
+startTrack(currentIndex);
 }
 
 function skipForward(){
-
 if(!tunedIn){
-
 startRadio();
 return;
-
 }
-
 startTrack(currentIndex+1);
-
 }
 
 function playPrev(){
-
 if(!tunedIn){
-
 startRadio();
 return;
-
 }
-
 startTrack(currentIndex-1);
-
 }
 
 player.addEventListener("ended",function(){
-
-if(player.src.includes(NEWS_FILE)){
-
-startTrack(currentIndex);
-return;
-
-}
-
 startTrack(currentIndex+1);
-
 });
-
 </script>
 
 </body>
