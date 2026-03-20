@@ -8,7 +8,7 @@
     <style>
         /* Full-page background image */
         body.weather-page {
-            background: url('kau-weather-bg.png?v=3') no-repeat center center fixed;
+            background: url('kau-weather-bg.png?v=4') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             padding: 0;
@@ -33,17 +33,18 @@
 
         .weather-content {
             padding: 20px;
+            padding-top: 420px;
         }
 
         .placeholder-box {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(44, 62, 80, 0.55);
             padding: 15px;
             margin-top: 10px;
             border-radius: 8px;
         }
 
         .info-card {
-            background-color: rgba(0, 0, 0, 0.45);
+            background-color: rgba(44, 62, 80, 0.55);
             padding: 20px;
             border-radius: 8px;
             color: #fff;
@@ -52,7 +53,7 @@
         /* Weather updates */
         .weather-updates {
             margin-top: 30px;
-            background-color: rgba(0, 0, 0, 0.45);
+            background-color: rgba(44, 62, 80, 0.55);
             padding: 20px;
             border-radius: 8px;
             color: #fff;
@@ -77,15 +78,7 @@
             text-decoration: none;
         }
 
-        /* Local forecast heading */
-        .local-forecast-heading {
-            text-align: center;
-            font-size: 2.5em;
-            color: #fff;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
+        
     </style>
 </head>
 <body class="weather-page">
@@ -96,9 +89,6 @@
     </nav>
 
     <main class="weather-content">
-
-        <h2 class="local-forecast-heading">Local Forecast</h2>
-
         <div class="weather-grid">
 
             <div class="info-card">
