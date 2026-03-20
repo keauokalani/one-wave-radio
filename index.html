@@ -1,254 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One Wave Radio</title>
-
-<style>
-
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:url("background.png") no-repeat center top fixed;
-background-size:cover;
-min-height:100vh;
-overflow:hidden;
-color:white;
-}
-
-.overlay{
-position:relative;
-min-height:100vh;
-width:100%;
-}
-
-nav{
-position:absolute;
-top:52%;
-left:50%;
-transform:translateX(-50%);
-display:flex;
-gap:18px;
-z-index:3;
-}
-
-nav a{
-color:white;
-text-decoration:none;
-font-size:18px;
-font-weight:bold;
-padding:10px 18px;
-border-radius:6px;
-background:rgba(0,0,0,0.45);
-backdrop-filter:blur(6px);
-}
-
-nav a:hover{
-background:#0ea5e9;
-}
-
-.player-wrap{
-position:absolute;
-top:62%;
-left:50%;
-transform:translateX(-50%);
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:12px;
-z-index:3;
-width:min(92vw,760px);
-}
-
-.controls{
-display:flex;
-gap:12px;
-}
-
-.controls button{
-background:rgba(0,0,0,0.5);
-color:#fff;
-border:none;
-padding:10px 18px;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
-
-.controls button:hover{
-background:#0ea5e9;
-}
-
-#trackTitle{
-font-size:18px;
-font-weight:bold;
-background:rgba(0,0,0,0.35);
-padding:8px 14px;
-border-radius:8px;
-}
-
-audio{
-display:none;
-}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>One Wave Radio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>body { margin: 0; font-family: system-ui, sans-serif; background: #0f0f0f; color: #fff; }</style>
 </head>
-
 <body>
-
-<div class="overlay">
-
-<nav>
-<a href="news.html">News</a>
-<a href="weather.html">Weather</a>
-<a href="about.html">About</a>
-</nav>
-
-<div class="player-wrap">
-
-<div class="controls">
-<button onclick="playPrev()">Prev</button>
-<button onclick="startRadio()">Listen Live</button>
-<button onclick="skipForward()">Next</button>
-</div>
-
-<p id="trackTitle">Tap Listen Live to tune in</p>
-
-</div>
-</div>
-
-<audio id="player"></audio>
-
-<script>
-
-var bucketURL="https://pub-2aa01387a331477abb91b2bed61747b9.r2.dev";
-
-var playlist=[
-
-"2000_futuristic_brandy.mp3",
-"90s_classic_brandy.mp3",
-"Country_Living.mp3",
-"Healing_Me.mp3",
-"Island_Bounce.mp3",
-"Island_Soul_Sunset_V2.mp3",
-"Island_soul_heavybass.mp3",
-"Island_soul_onedrop.mp3",
-"Island_sunset_instrumental.mp3",
-"Kaucoffee_islandreggae.mp3",
-"Minimaldrill_trap.mp3",
-"Mother_of_light.mp3",
-"Nvr_say_goodbye_brandy.mp3",
-"Slowjamballad_brandy.mp3",
-"Softly_loving_you.mp3",
-"Softly_loving_you_main.mp3",
-"Softlylovingyou_megan_version.mp3",
-"Spacetrap_futuristic.mp3",
-"UK_Lovers_Reggae.mp3",
-"bell_noir.mp3",
-"darklane_latenight_drake.mp3",
-"dubtouch_reggae.mp3",
-"emotionalspace_piano_drake.mp3",
-"industrial_street.mp3",
-"island_horizon.mp3",
-"islandroots_reflections.mp3",
-"kaucoffee_islandcountry.mp3",
-"latenight_luxury_trap.mp3",
-"luxury_glossy_trap.mp3",
-"midnightdrift_drake.mp3",
-"quiet_reflection.mp3",
-"rnb_midtempo_brandy.mp3",
-"version_four_drake.mp3",
-"version_three_drake.mp3",
-"version_two_drake.mp3",
-"Bittersweet_Memories.mp3"
-];
-
-var player=document.getElementById("player");
-var trackTitle=document.getElementById("trackTitle");
-
-var tracks=[];
-var currentIndex=0;
-var tunedIn=false;
-
-function formatTitle(file){
-return file.replace(/_/g," ").replace(".mp3","");
-}
-
-function buildTracks(){
-tracks=playlist.map(function(file){
-return{
-file:file,
-title:formatTitle(file),
-url:bucketURL+"/"+encodeURIComponent(file)
-};
-});
-}
-
-function shuffle(array){
-for(let i=array.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[array[i],array[j]]=[array[j],array[i]];
-}
-}
-
-buildTracks();
-shuffle(tracks);
-
-function playTrack(track,index){
-if(index!==undefined) currentIndex=index;
-
-player.src=track.url;
-trackTitle.textContent="Now Playing: "+track.title;
-
-player.play().then(function(){
-tunedIn=true;
-}).catch(function(){
-trackTitle.textContent="Tap Listen Live to tune in";
-});
-}
-
-function startRadio(){
-if(tunedIn) return;
-startTrack(currentIndex);
-}
-
-function startTrack(index){
-
-if(index>=tracks.length){
-shuffle(tracks);
-index=0;
-}
-
-if(index<0){
-index=tracks.length-1;
-}
-
-playTrack(tracks[index],index);
-
-}
-
-function skipForward(){
-if(!tunedIn){
-startRadio();
-return;
-}
-startTrack(currentIndex+1);
-}
-
-function playPrev(){
-if(!tunedIn){
-startRadio();
-return;
-}
-startTrack(currentIndex-1);
-}
-
-player.addEventListener("ended",function(){
-startTrack(currentIndex+1);
-});
-
-</script>
-
+<section class="relative bg-gradient-to-br from-purple-900 via-black to-blue-900 py-24 text-center overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 opacity-50"></div>
+          <div class="relative z-10 max-w-4xl mx-auto px-4">
+            <h1 class="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400" data-field="title" editable>One Wave Radio</h1>
+            <p class="text-xl text-gray-300 mb-8" data-field="subtitle" editable>Ride the frequency. Feel the vibe.</p>
+            <div class="flex justify-center gap-4">
+              <a href="#listen" class="bg-pink-600 hover:bg-pink-500 px-8 py-3 rounded-full font-semibold transition" editable>Listen Live</a>
+              <a href="#schedule" class="border border-white/30 hover:border-white px-8 py-3 rounded-full font-semibold transition" editable>View Schedule</a>
+            </div>
+          </div>
+        </section>
+<section class="py-20 bg-black text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 opacity-50"></div>
+          <div class="relative z-10 max-w-3xl mx-auto px-4">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-pink-500 animate-pulse flex items-center justify-center">
+              <i class="fas fa-radio text-4xl text-white"></i>
+            </div>
+            <h2 class="text-4xl font-bold mb-2" data-field="title" editable>ON AIR NOW</h2>
+            <p class="text-xl text-gray-300 mb-8" data-field="artist" editable>Live Stream</p>
+            <audio controls class="w-full max-w-md mx-auto" crossorigin="anonymous">
+              <source src="https://your-cloudflare-domain.com/stream.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+        </section>
+<section class="py-20 bg-gray-950" id="schedule">
+          <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12" data-field="title" editable>Broadcast Schedule</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-pink-500 transition">
+                <div class="text-pink-400 font-mono text-sm mb-2" editable>12:00 AM – 6:00 AM</div>
+                <h3 class="text-xl font-bold mb-1" editable>Midnight Waves</h3>
+                <p class="text-gray-400" editable>Late-night ambient & chill</p>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-purple-500 transition">
+                <div class="text-purple-400 font-mono text-sm mb-2" editable>6:00 AM – 12:00 PM</div>
+                <h3 class="text-xl font-bold mb-1" editable>Morning Rise</h3>
+                <p class="text-gray-400" editable>Upbeat morning grooves</p>
+              </div>
+              <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-blue-500 transition">
+                <div class="text-blue-400 font-mono text-sm mb-2" editable>12:00 PM – 6:00 PM</div>
+                <h3 class="text-xl font-bold mb-1" editable>Day Flow</h3>
+                <p class="text-gray-400" editable>Smooth daytime selections</p>
+              </div>
+            </div>
+          </div>
+        </section>
+<section class="py-20 bg-black">
+          <div class="max-w-3xl mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-6" data-field="title" editable>About One Wave Radio</h2>
+            <p class="text-gray-300 text-lg leading-relaxed" data-field="description" editable>
+              One Wave Radio is an independent internet radio station bringing you curated music, live DJ sets, and community-driven content 24/7. Ride the wave with us.
+            </p>
+          </div>
+        </section>
 </body>
 </html>
