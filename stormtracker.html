@@ -78,11 +78,23 @@ async function loadAlerts(){
     const r=await fetch('https://api.weather.gov/alerts/active?area=HI',{headers:{Accept:'application/geo+json'}});
     if(!r.ok)throw new Error('NWS response '+r.status);
     const data=await r.json();
+    const now=Date.now();
     const grouped=new Map();
     for(const item of (data.features||[])){
       const p=item.properties||{};
-      const key=(p.event||'Alert')+'|'+(p.headline||'');
-      if(!grouped.has(key))grouped.set(key,item);
+      const expiresAt=new Date(p.expires||p.ends||p.effective||p.sent||0).getTime();
+      if(expiresAt&&expiresAt<now)continue;
+      const key=p.event||'Weather Alert';
+      const current=grouped.get(key);
+      if(!current){
+        grouped.set(key,{...item,properties:{...p}});
+        continue;
+      }
+      const cp=current.properties||{};
+      const areas=new Set([...(cp.areaDesc||'').split(';'),...(p.areaDesc||'').split(';')].map(x=>x.trim()).filter(Boolean));
+      const newest=new Date(p.sent||0)>new Date(cp.sent||0)?p:cp;
+      const strongest=(severityOrder[p.severity]??4)<(severityOrder[cp.severity]??4)?p.severity:cp.severity;
+      grouped.set(key,{...current,properties:{...newest,areaDesc:[...areas].join('; '),severity:strongest}});
     }
     const items=[...grouped.values()].sort((a,b)=>{
       const ap=a.properties||{},bp=b.properties||{};
@@ -94,7 +106,7 @@ async function loadAlerts(){
       const shown=items.slice(0,4);
       const remaining=items.slice(4);
       const urgent=items.filter(x=>['Extreme','Severe'].includes((x.properties||{}).severity)).length;
-      alertBox.innerHTML='<div class="alert-summary"><strong>'+items.length+' grouped statewide alerts</strong><span>'+urgent+' extreme or severe</span></div><div class="alert-grid">'+shown.map(alertMarkup).join('')+'</div>'+(remaining.length?'<details class="more-alerts"><summary>Show all '+items.length+' grouped alerts</summary><div class="alert-grid">'+remaining.map(alertMarkup).join('')+'</div></details>':'');
+      alertBox.innerHTML='<div class="alert-summary"><strong>'+items.length+' current statewide alert types</strong><span>'+urgent+' extreme or severe</span></div><div class="alert-grid">'+shown.map(alertMarkup).join('')+'</div>'+(remaining.length?'<details class="more-alerts"><summary>Show all '+items.length+' current alert types</summary><div class="alert-grid">'+remaining.map(alertMarkup).join('')+'</div></details>':'');
     }
     alertTime.textContent='NWS alerts checked '+new Date().toLocaleString('en-US',{timeZone:'Pacific/Honolulu'})+' HST';
   }catch(e){
