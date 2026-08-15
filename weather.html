@@ -1,110 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="One Wave Radio Hawaiʻi Storm Tracker with live National Weather Service alerts, Hawaiʻi radar and satellite, emergency information, Hawaii News Now weather coverage, Hawaiian Electric outage updates, and Hawaiʻi Police Department public safety updates.">
-<title>Hawaiʻi Storm Tracker | One Wave Radio</title>
-<link rel="stylesheet" href="style.css">
-<style>
-:root{--glass:rgba(10,24,38,.82);--glass2:rgba(5,16,28,.9);--line:rgba(255,255,255,.15);--gold:#ffd27a;--cyan:#75e8ff;--red:#ff6868;--green:#8bf0a5}
-*{box-sizing:border-box}
-body.weather-page{margin:0;min-height:100vh;background:linear-gradient(rgba(0,0,0,.20),rgba(0,0,0,.70)),url('kau-weather-bg.png?v=4') center top/cover fixed no-repeat;color:#fff;font-family:Arial,sans-serif}
-a{color:var(--cyan)}
-.weather-nav{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:14px;background:rgba(3,12,22,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.weather-nav a{color:#fff;text-decoration:none;font-weight:700}.weather-nav a:hover{color:var(--gold)}
-.hero{max-width:1180px;margin:auto;padding:88px 20px 30px;text-align:center}.hero h1{font-size:clamp(2rem,6vw,4.3rem);margin:0;text-shadow:0 4px 25px #000}.hero p{max-width:850px;margin:14px auto 0;font-size:1.08rem;line-height:1.55}.live-pill{display:inline-block;margin-top:18px;padding:8px 14px;border-radius:999px;background:rgba(255,104,104,.20);border:1px solid rgba(255,104,104,.55);font-weight:bold}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:7px;box-shadow:0 0 12px var(--red)}
-.dashboard{max-width:1180px;margin:auto;padding:10px 20px 70px}.section-title{margin:34px 0 14px;font-size:1.7rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}.card{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 12px 35px rgba(0,0,0,.25)}.card h2,.card h3{margin-top:0;color:var(--gold)}.card p{line-height:1.5}.btn{display:inline-block;margin:6px 6px 0 0;padding:10px 13px;border-radius:9px;background:#0d6e96;color:#fff;text-decoration:none;font-weight:700}.btn.alt{background:#394e63}.btn.danger{background:#a83232}.status{font-size:.9rem;opacity:.82}.alert{padding:13px;border-left:5px solid var(--red);background:rgba(255,104,104,.13);border-radius:8px;margin:10px 0}.alert strong{display:block;margin-bottom:5px}.quiet{padding:13px;background:rgba(139,240,165,.10);border-left:5px solid var(--green);border-radius:8px}.big-card{grid-column:1/-1}.source-list{display:grid;gap:10px}.source-row{padding:12px;border-radius:10px;background:rgba(255,255,255,.06)}.source-row b{color:var(--gold)}
-footer{text-align:center;padding:25px;background:var(--glass2);font-size:.88rem;line-height:1.5}.emergency-note{background:rgba(255,210,122,.12);border:1px solid rgba(255,210,122,.35);padding:14px;border-radius:10px}
-@media(max-width:640px){.hero{padding-top:55px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaʻū Weather | One Wave Radio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.weather-page {
+            background: url('kau-weather-bg.png?v=4') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .info-card h3 {font-size:1.5em}.info-card p{font-size:1em}
+        .weather-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:10px}
+        .weather-content{padding:20px;padding-top:420px}
+        .placeholder-box{background-color:rgba(44,62,80,.55);padding:15px;margin-top:10px;border-radius:8px}
+        .info-card{background-color:rgba(44,62,80,.55);padding:20px;border-radius:8px;color:#fff}
+        .weather-updates{margin-top:30px;background-color:rgba(44,62,80,.55);padding:20px;border-radius:8px;color:#fff}.weather-updates h3{margin-top:0;font-size:1.8em}.weather-updates p{font-size:1em;margin-top:10px}
+        .weather-nav{text-align:center;margin-bottom:10px}.weather-nav a{margin:0 10px;color:#fff;text-decoration:none}
+    </style>
 </head>
 <body class="weather-page">
 <nav class="weather-nav">
-<a href="index.html">Home</a><a href="listen.html">Listen Live</a><a href="news.html">News</a><a href="#alerts">Alerts</a><a href="#radar">Radar & Satellite</a><a href="#official">Emergency</a><a href="#power">Power</a><a href="#police">Police</a><a href="#hnn">HNN</a>
+<a href="index.html">Home</a><a href="listen.html">Listen Live</a><a href="news.html">News</a><a href="weather.html">Kaʻū Weather</a><a href="stormtracker.html">Hawaiʻi Storm Tracker</a><a href="about.html">About</a>
 </nav>
-<header class="hero">
-<h1>Hawaiʻi Storm Tracker</h1>
-<p>One Wave Radio’s one-stop storm information center for Hawaiʻi: live National Weather Service alerts, tropical weather, radar and satellite resources, Hawaiʻi County and State emergency information, Hawaiian Electric outage and social updates, Hawaiʻi Police Department public-safety feeds, and local breaking weather coverage.</p>
-<div class="live-pill"><span class="dot"></span>LIVE INFORMATION CENTER</div>
-</header>
-<main class="dashboard">
-<section id="alerts">
-<h2 class="section-title">⚠️ Active Hawaiʻi Weather Alerts</h2>
-<div class="card big-card"><div id="nws-alerts"><p>Loading current National Weather Service alerts…</p></div><p class="status" id="alert-time"></p></div>
-</section>
-<section id="radar">
-<h2 class="section-title">🛰️ Radar, Satellite & Tropical Weather</h2>
-<div class="grid">
-<div class="card"><h3>Hawaiʻi Island Radar</h3><p>National Weather Service radar centered on South Point / Hawaiʻi Island.</p><a class="btn" target="_blank" rel="noopener" href="https://radar.weather.gov/station/phwa/standard">Open Live PHWA Radar</a></div>
-<div class="card"><h3>NOAA Hawaiʻi Satellite</h3><p>GOES satellite imagery covering Hawaiʻi and the Central Pacific.</p><a class="btn" target="_blank" rel="noopener" href="https://www.star.nesdis.noaa.gov/GOES/sector.php?sat=G18&sector=hi">Open Live Satellite</a></div>
-<div class="card"><h3>Central Pacific Hurricane Center</h3><p>Official tropical cyclone advisories, outlooks, forecasts, tracks and discussions.</p><a class="btn danger" target="_blank" rel="noopener" href="https://www.nhc.noaa.gov/?cpac">Open CPHC / NHC</a></div>
-<div class="card"><h3>NWS Honolulu</h3><p>Official Hawaiʻi forecasts, watches, warnings, discussions, surf and marine information.</p><a class="btn" target="_blank" rel="noopener" href="https://www.weather.gov/hfo/">Open NWS Honolulu</a></div>
+<main class="weather-content">
+<div class="weather-grid">
+<div class="info-card"><h3>Kaʻū Forecast</h3><p>Current weather, temperature, wind, rain outlook, and general district conditions for Kaʻū.</p><div class="placeholder-box">Local Kaʻū forecast information and updates appear here.</div></div>
+<div class="info-card"><h3>Punaluʻu Tides</h3><p>High tide, low tide, and daily tide timing for Punaluʻu and nearby shoreline areas.</p><div class="placeholder-box">Punaluʻu tide and shoreline information appears here.</div></div>
+<div class="info-card"><h3>Kalae (South Point) Conditions</h3><p>Wind, ocean conditions, shoreline outlook, and local marine conditions for Kalae / South Point.</p><div class="placeholder-box">South Point wind, surf, and marine conditions appear here.</div></div>
 </div>
-</section>
-<section id="official">
-<h2 class="section-title">🏛️ Government & Emergency Updates</h2>
-<div class="grid">
-<div class="card"><h3>Hawaiʻi County Civil Defense</h3><p>Emergency alerts and official Hawaiʻi Island incident information.</p><a class="btn" target="_blank" rel="noopener" href="https://www.hawaiicounty.gov/departments/civil-defense">Civil Defense</a><a class="btn alt" target="_blank" rel="noopener" href="https://www.hawaiicounty.gov/departments/civil-defense/active-civil-defense-alerts-and-maps">Active Alerts</a></div>
-<div class="card"><h3>State of Hawaiʻi Emergency Management</h3><p>Statewide emergency preparedness and incident information.</p><a class="btn" target="_blank" rel="noopener" href="https://dod.hawaii.gov/hiema/">HI-EMA</a></div>
-<div class="card"><h3>Governor of Hawaiʻi</h3><p>Official state announcements, emergency proclamations and public updates.</p><a class="btn" target="_blank" rel="noopener" href="https://governor.hawaii.gov/">Governor’s Office</a></div>
-<div class="card"><h3>Mayor of Hawaiʻi County</h3><p>County leadership announcements and storm-related public information.</p><a class="btn" target="_blank" rel="noopener" href="https://www.hawaiicounty.gov/our-county/mayor">Mayor’s Office</a></div>
-</div>
-</section>
-<section id="power">
-<h2 class="section-title">⚡ Hawaiian Electric / HELCO — Power & Social Updates</h2>
-<div class="grid">
-<div class="card"><h3>Hawaiʻi Island Outage Map</h3><p>Current outages, approximate customers affected, and available restoration estimates.</p><a class="btn danger" target="_blank" rel="noopener" href="https://www.hawaiianelectric.com/safety-and-outages/power-outages/hawaii-island-outage-map">Open Outage Map</a><p class="status">Hawaiʻi Island Trouble Line: 1-855-304-9191</p></div>
-<div class="card"><h3>HELCO on X</h3><p>Fast Hawaiʻi Island outage and restoration updates from Hawaiian Electric’s regional account.</p><a class="btn" target="_blank" rel="noopener" href="https://x.com/HIElectricLight">@HIElectricLight</a><a class="btn alt" target="_blank" rel="noopener" href="https://x.com/search?q=%23BigIslandOutage&src=typed_query&f=live">#BigIslandOutage</a></div>
-<div class="card"><h3>Hawaiian Electric Facebook</h3><p>Official storm preparation, outage, traffic and public-safety posts.</p><a class="btn" target="_blank" rel="noopener" href="https://www.facebook.com/HawaiianElectric/">Open Facebook</a></div>
-<div class="card"><h3>Hawaiian Electric Instagram</h3><p>Official company emergency, preparedness and service updates.</p><a class="btn" target="_blank" rel="noopener" href="https://www.instagram.com/hawaiianelectric/">@hawaiianelectric</a><a class="btn alt" target="_blank" rel="noopener" href="https://www.hawaiianelectric.com/safety-and-outages/storm-center">Storm Center</a></div>
-</div>
-</section>
-<section id="police">
-<h2 class="section-title">🚓 Hawaiʻi Police Department — Roads & Public Safety</h2>
-<div class="grid">
-<div class="card"><h3>HPD Facebook</h3><p>Fast public-safety information, road conditions, closures and community alerts from Hawaiʻi Island police.</p><a class="btn" target="_blank" rel="noopener" href="https://www.facebook.com/HawaiiPoliceDepartment/">Open HPD Facebook</a></div>
-<div class="card"><h3>HPD on X</h3><p>Official Hawaiʻi Police Department short-form public safety updates.</p><a class="btn" target="_blank" rel="noopener" href="https://x.com/Hawaii_Police">@Hawaii_Police</a></div>
-<div class="card"><h3>HPD Instagram</h3><p>Official Hawaiʻi Police Department visual and public information updates.</p><a class="btn" target="_blank" rel="noopener" href="https://www.instagram.com/hawaiicounty_police/">@hawaiicounty_police</a></div>
-<div class="card"><h3>HPD Alerts & Media Releases</h3><p>Official department releases plus email/text alert signup for time-sensitive information such as road closures.</p><a class="btn" target="_blank" rel="noopener" href="https://www.hawaiipolice.gov/news-and-media/media-releases/">Media Releases</a><a class="btn alt" target="_blank" rel="noopener" href="https://www.hawaiipolice.gov/news-and-media/email-and-text-alerts/">Email/Text Alerts</a></div>
-</div>
-</section>
-<section id="hnn">
-<h2 class="section-title">📺 Hawaii News Now Weather & Breaking Coverage</h2>
-<div class="grid">
-<div class="card"><h3>First Alert Weather</h3><p>Latest local forecasts, severe-weather reporting and storm coverage from Hawaii News Now.</p><a class="btn" target="_blank" rel="noopener" href="https://www.hawaiinewsnow.com/weather/">Latest HNN Weather</a></div>
-<div class="card"><h3>Hawaii News Now Live</h3><p>Direct access to live breaking coverage and emergency broadcasts.</p><a class="btn danger" target="_blank" rel="noopener" href="https://www.hawaiinewsnow.com/livestream/">Watch HNN Live</a></div>
-</div>
-</section>
-<section>
-<h2 class="section-title">🔗 Emergency Source Directory</h2>
-<div class="card big-card source-list">
-<div class="source-row"><b>Primary weather authority:</b> NOAA / National Weather Service / Central Pacific Hurricane Center</div>
-<div class="source-row"><b>Hawaiʻi Island emergencies:</b> Hawaiʻi County Civil Defense</div>
-<div class="source-row"><b>Roads and public safety:</b> Hawaiʻi Police Department website + Facebook + X + Instagram</div>
-<div class="source-row"><b>Electric service:</b> Hawaiian Electric outage map + @HIElectricLight + Facebook + Instagram</div>
-<div class="source-row"><b>Local media:</b> Hawaii News Now First Alert Weather and live coverage</div>
-<p class="emergency-note"><b>Important:</b> One Wave Radio aggregates convenient links and live public alert data. During an emergency, always follow evacuation orders and instructions issued directly by government and emergency-management authorities.</p>
-</div>
-</section>
+<div class="weather-updates"><h3>Kaʻū Weather Updates</h3><p>This page is dedicated specifically to local Kaʻū district weather. For statewide severe weather, tropical systems, emergency alerts, power outages and public-safety information, visit the separate <a href="stormtracker.html" style="color:#ffd27a;font-weight:bold;">Hawaiʻi Storm Tracker</a>.</p></div>
 </main>
-<footer>One Wave Radio • Hawaiʻi Storm Tracker • Weather and emergency information from official public sources and linked news, utility and public-safety providers.<br>NWS alert panel automatically refreshes every 5 minutes while this page is open.</footer>
-<script>
-const alertBox=document.getElementById('nws-alerts');
-const alertTime=document.getElementById('alert-time');
-function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
-async function loadAlerts(){
- try{
-  const r=await fetch('https://api.weather.gov/alerts/active?area=HI',{headers:{'Accept':'application/geo+json'}});
-  if(!r.ok)throw new Error('NWS response '+r.status);
-  const data=await r.json();
-  const items=(data.features||[]).sort((a,b)=>new Date(b.properties.sent)-new Date(a.properties.sent));
-  if(!items.length){alertBox.innerHTML='<div class="quiet"><strong>No active NWS alerts for Hawaiʻi at this moment.</strong><br>Conditions can change quickly. Continue monitoring official sources.</div>';}
-  else{alertBox.innerHTML=items.map(x=>{const p=x.properties||{};const when=p.sent?new Date(p.sent).toLocaleString('en-US',{timeZone:'Pacific/Honolulu'}):'';return '<div class="alert"><strong>'+esc(p.event)+'</strong><b>'+esc(p.headline||'')+'</b><br><span>'+esc(p.areaDesc||'')+'</span><br><span class="status">Issued '+esc(when)+' HST • '+esc(p.severity||'')+' severity</span></div>';}).join('');}
-  alertTime.textContent='NWS alerts checked '+new Date().toLocaleString('en-US',{timeZone:'Pacific/Honolulu'})+' HST';
- }catch(e){alertBox.innerHTML='<div class="alert"><strong>Live alert feed temporarily unavailable.</strong>Use the NWS Honolulu and CPHC links below for official current information.</div>';alertTime.textContent='';}
-}
-loadAlerts();setInterval(loadAlerts,300000);
-</script>
 </body>
 </html>
